@@ -59,3 +59,5 @@ g++ -o Assembler Project6/Assembler.cpp
 
 # Run it on a .asm file
 ./Assembler Project6/Fill.asm
+
+# Uzair @ khi.iba.edu.pk
