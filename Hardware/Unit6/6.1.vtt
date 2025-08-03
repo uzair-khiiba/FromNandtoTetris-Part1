@@ -1,0 +1,1242 @@
+WEBVTT
+
+1
+00:00:05.188 --> 00:00:10.450
+Last week, we've built a computer that
+can run a code, machine language code.
+
+2
+00:00:11.640 --> 00:00:15.130
+Two weeks ago, we've actually
+programmed in machine language, but
+
+3
+00:00:15.130 --> 00:00:17.150
+we didn't really program in binary code,
+
+4
+00:00:17.150 --> 00:00:20.490
+but rather in assembly language
+in some kind of nice syntax.
+
+5
+00:00:20.490 --> 00:00:22.430
+So, there is a gap in the middle, and
+
+6
+00:00:22.430 --> 00:00:25.890
+the gap is supposed to be a simple
+software program called an Assembler.
+
+7
+00:00:27.030 --> 00:00:30.930
+So, specifically,
+you've seen this slide already twice.
+
+8
+00:00:30.930 --> 00:00:35.270
+Two weeks ago, you've seen this slide
+to focus on the left-hand side and
+
+9
+00:00:35.270 --> 00:00:38.870
+the actual assembly language format in
+which you were supposed to program.
+
+10
+00:00:38.870 --> 00:00:42.660
+That was your eh,
+perspective two weeks ago.
+
+11
+00:00:42.660 --> 00:00:45.910
+Your perspective last week was what
+happened on the right-hand side,
+
+12
+00:00:45.910 --> 00:00:49.610
+the machine language, since you had
+to actually construct a computer
+
+13
+00:00:49.610 --> 00:00:52.930
+that can actually execute the 1s and
+0 that you see on the right.
+
+14
+00:00:54.230 --> 00:00:57.500
+Our focus, our perspective this
+week is going to be on the middle,
+
+15
+00:00:57.500 --> 00:01:01.450
+how do you go from left to route,
+how do you do, from left to right.
+
+16
+00:01:01.450 --> 00:01:04.294
+How do you do the operation
+the assembly operation?
+
+17
+00:01:04.294 --> 00:01:08.219
+I.e., how do you, what is the assembler,
+which is a program that translates what
+
+18
+00:01:08.219 --> 00:01:11.866
+you have on the left, the, the, the
+assembly language code to what you have on
+
+19
+00:01:11.866 --> 00:01:14.280
+the right, the machine,
+machine language code.
+
+20
+00:01:15.830 --> 00:01:19.710
+Now notice it's, for the first time
+in this course, this is software.
+
+21
+00:01:19.710 --> 00:01:24.940
+This soft, this is going to be a program
+that takes as input a file written
+
+22
+00:01:24.940 --> 00:01:29.950
+in the left hand side format,
+i.e., in assembly language, and
+
+23
+00:01:29.950 --> 00:01:35.130
+produces another file that's written
+in the right-hand side format i.e.,
+
+24
+00:01:35.130 --> 00:01:39.050
+as zeros and ones, which directly
+can be executed on a computer.
+
+25
+00:01:39.050 --> 00:01:42.620
+So this is a software, the first time
+that you do software in this course.
+
+26
+00:01:42.620 --> 00:01:45.170
+Until now, we, it was always hardware.
+
+27
+00:01:45.170 --> 00:01:49.380
+And it's really the first software
+layer In every arg, in every eh,
+
+28
+00:01:49.380 --> 00:01:52.610
+the first software layer that
+basically we have in every computer.
+
+29
+00:01:52.610 --> 00:01:55.487
+There are much more,
+there is much more software above it, but
+
+30
+00:01:55.487 --> 00:01:56.627
+this is the first level,
+
+31
+00:01:56.627 --> 00:02:00.430
+and we're doing it together with the
+hardware to give us a complete picture.
+
+32
+00:02:00.430 --> 00:02:03.980
+So we can have a computer that we
+can understand how you program it.
+
+33
+00:02:03.980 --> 00:02:08.216
+And understanding how you program it does
+not mean programming it in zero and ones,
+
+34
+00:02:08.216 --> 00:02:11.122
+but rather in assembly language
+which is still is a very,
+
+35
+00:02:11.122 --> 00:02:14.349
+very low format essentially
+equivalent to machine language.
+
+36
+00:02:14.349 --> 00:02:17.510
+But still it's something
+that humans can relate to.
+
+37
+00:02:17.510 --> 00:02:21.440
+So let's see what kind of software
+is this going to be, this assembler.
+
+38
+00:02:21.440 --> 00:02:22.230
+In principle,
+
+39
+00:02:22.230 --> 00:02:26.660
+you've only, we've only created a computer
+that can run machine language code.
+
+40
+00:02:26.660 --> 00:02:30.520
+So, in principle, we should write our
+program in the only language that can be
+
+41
+00:02:30.520 --> 00:02:34.390
+directly executed, i.e.,
+in machine language code in zeros and
+
+42
+00:02:34.390 --> 00:02:36.230
+ones, which is going
+to be pretty annoying.
+
+43
+00:02:37.280 --> 00:02:40.920
+But, the best way to think about it
+is that we're not writing the first,
+
+44
+00:02:40.920 --> 00:02:45.140
+we're not constructing the first computer
+in the world, but rather the second one.
+
+45
+00:02:45.140 --> 00:02:47.680
+So, let us assume we
+already have a computer
+
+46
+00:02:47.680 --> 00:02:49.910
+that can run some high-level language.
+
+47
+00:02:49.910 --> 00:02:52.370
+In particular,
+I'm talking about your computer and
+
+48
+00:02:52.370 --> 00:02:54.180
+the high-level languages
+that you already know.
+
+49
+00:02:55.320 --> 00:02:58.630
+So, we are going to write
+the assembler in that language, and
+
+50
+00:02:58.630 --> 00:03:02.040
+it will be a software program
+that runs on your computer.
+
+51
+00:03:02.040 --> 00:03:06.020
+What it's going to produce, the machine
+language it is going to produce,
+
+52
+00:03:06.020 --> 00:03:09.880
+is machine language for the HACK computer,
+for a different computer,
+
+53
+00:03:09.880 --> 00:03:13.790
+the computer on which you will
+actually run the produced program.
+
+54
+00:03:13.790 --> 00:03:17.880
+So we're thinking about cross-compilers,
+some, sometimes it's called.
+
+55
+00:03:17.880 --> 00:03:22.000
+It's running on one computer and producing
+code intended for another computer.
+
+56
+00:03:22.000 --> 00:03:25.900
+This way, we don't have this loop,
+we don't have this bootstrap problem of
+
+57
+00:03:25.900 --> 00:03:28.311
+having to write our
+assembler in machine code.
+
+58
+00:03:28.311 --> 00:03:31.443
+But rather we can write it already
+in the high-level language that we
+
+59
+00:03:31.443 --> 00:03:34.270
+have already implemented
+on another computer.
+
+60
+00:03:34.270 --> 00:03:38.110
+So the Assembler program is
+really a very simple program.
+
+61
+00:03:38.110 --> 00:03:41.480
+It does the following basic loop and
+repeats it again and again.
+
+62
+00:03:41.480 --> 00:03:43.880
+It reads one Assembly language
+command from the input.
+
+63
+00:03:45.100 --> 00:03:49.372
+It basically breaks it into its parts,
+and each one of its parts can be
+
+64
+00:03:49.372 --> 00:03:53.881
+translated to binary in a unique way
+that's specified by our language.
+
+65
+00:03:53.881 --> 00:03:57.767
+And then we take the binary code of the
+different parts, put them together, and
+
+66
+00:03:57.767 --> 00:04:01.479
+we get the machine code that directly
+is equivalent to the Assembly language
+
+67
+00:04:01.479 --> 00:04:03.810
+command that we've just read.
+
+68
+00:04:03.810 --> 00:04:07.930
+We output that, and we move on to
+the next Assembly language command.
+
+69
+00:04:07.930 --> 00:04:11.480
+We keep on doing that and
+translate one command after another
+
+70
+00:04:11.480 --> 00:04:15.987
+without having to remember anything that
+happened in the history, very simple.
+
+71
+00:04:15.987 --> 00:04:18.150
+So let's look at the different stages,
+
+72
+00:04:18.150 --> 00:04:21.870
+each one of these different stages,
+slightly more carefully.
+
+73
+00:04:21.870 --> 00:04:24.650
+So how do we read the next
+Assembly language command?
+
+74
+00:04:24.650 --> 00:04:27.790
+Well, it seems that we just read
+the next line from the input.
+
+75
+00:04:27.790 --> 00:04:30.094
+This is almost exactly what we do.
+
+76
+00:04:30.094 --> 00:04:33.323
+The only, the only other
+difficulty is that we may need to,
+
+77
+00:04:33.323 --> 00:04:37.183
+to skip what's called white space,
+for example, comments.
+
+78
+00:04:37.183 --> 00:04:40.260
+We need to make sure that we read
+what is really the next command and
+
+79
+00:04:40.260 --> 00:04:45.960
+not any kind of a comment, or any type of
+spaces, or blank lines that are with it.
+
+80
+00:04:45.960 --> 00:04:50.360
+So when we read it from the file, we have
+this file that, let's say, has a command
+
+81
+00:04:50.360 --> 00:04:57.120
+Load R1, 18, and this is just
+a fictional language, Assembly language.
+
+82
+00:04:57.120 --> 00:05:00.320
+Later in the next unit we'll start
+actually talking about the Hack len,
+
+83
+00:05:00.320 --> 00:05:02.240
+language specifically, but
+
+84
+00:05:02.240 --> 00:05:07.790
+in this unit I'm still focusing on
+a generic Assembly Assembler program.
+
+85
+00:05:07.790 --> 00:05:11.330
+So let's assume that our
+hypothetical Assembly language
+
+86
+00:05:11.330 --> 00:05:15.520
+has this type of command, Load R1,
+18, which we expect is the,
+
+87
+00:05:15.520 --> 00:05:20.360
+would probably mean taking the value 18
+and putting it into the first register.
+
+88
+00:05:20.360 --> 00:05:22.530
+But this is not something
+that we need to go,
+
+89
+00:05:22.530 --> 00:05:26.600
+to know when we're actually
+doing this translation.
+
+90
+00:05:26.600 --> 00:05:30.940
+We actually want to read that command and
+put it into some kind of string variable,
+
+91
+00:05:30.940 --> 00:05:35.510
+into some kind of array of characters
+that we can later work on.
+
+92
+00:05:35.510 --> 00:05:40.220
+And that is basically what's involved in
+reading a line by line from the input.
+
+93
+00:05:40.220 --> 00:05:43.900
+So the next step is taking
+this string of characters and
+
+94
+00:05:43.900 --> 00:05:45.950
+breaking it into its different parts.
+
+95
+00:05:45.950 --> 00:05:47.090
+So when we look at it,
+
+96
+00:05:47.090 --> 00:05:51.230
+we see that the different parts of
+this command are Load, first part.
+
+97
+00:05:51.230 --> 00:05:52.640
+R1 should be the second part.
+
+98
+00:05:52.640 --> 00:05:54.720
+18 should be the third part.
+
+99
+00:05:54.720 --> 00:05:56.360
+Each one of them has meaning.
+
+100
+00:05:56.360 --> 00:05:58.390
+And there is also a space and a comma.
+
+101
+00:05:58.390 --> 00:06:01.504
+But these are not really
+the interesting parts of the command,
+
+102
+00:06:01.504 --> 00:06:05.677
+but rather just some syntax, which helps
+us break and understand what's written,
+
+103
+00:06:05.677 --> 00:06:07.460
+the important part in the command.
+
+104
+00:06:07.460 --> 00:06:11.295
+So, the next thing we have to do is
+basically understand the syntax and
+
+105
+00:06:11.295 --> 00:06:15.975
+break the original string into these three
+different, if you wish, sub-strings,
+
+106
+00:06:15.975 --> 00:06:20.690
+the three different interesting parts
+that are involved in this command.
+
+107
+00:06:20.690 --> 00:06:24.500
+So that involves basically some
+kind of simple string manipulation
+
+108
+00:06:24.500 --> 00:06:25.910
+until we get the different parts.
+
+109
+00:06:27.400 --> 00:06:31.790
+Once we have these different parts, then
+we will need to translate each one of them
+
+110
+00:06:31.790 --> 00:06:35.940
+to machine language, to actually its
+binary pa, its binary counterpart.
+
+111
+00:06:35.940 --> 00:06:37.520
+Now, how do we do that?
+
+112
+00:06:37.520 --> 00:06:40.600
+That has to be part of the specification
+of the machine language and
+
+113
+00:06:40.600 --> 00:06:41.860
+assembly language.
+
+114
+00:06:41.860 --> 00:06:47.040
+Basically tells us what is the code for
+each one of these commands, for example.
+
+115
+00:06:47.040 --> 00:06:51.760
+So it would, so for example, eh, the Load
+command, we would probably have some kind
+
+116
+00:06:51.760 --> 00:06:55.870
+of table, which tells us, what is the
+machine language code for each command?
+
+117
+00:06:55.870 --> 00:06:58.120
+In particular,
+we can look up in that table and
+
+118
+00:06:58.120 --> 00:07:01.019
+see what is the machine language code for
+the Load command.
+
+119
+00:07:01.019 --> 00:07:05.641
+Other parts of the input may be, for
+example, numbers or maybe other things,
+
+120
+00:07:05.641 --> 00:07:09.846
+that we can directly translate into
+machine language just because they
+
+121
+00:07:09.846 --> 00:07:10.800
+are numbers.
+
+122
+00:07:10.800 --> 00:07:14.125
+For example,
+the number 18 may be translated
+
+123
+00:07:14.125 --> 00:07:17.285
+into just into the binary
+representation of the number 18.
+
+124
+00:07:17.285 --> 00:07:20.865
+Again, this is part of
+the language specification.
+
+125
+00:07:20.865 --> 00:07:22.035
+This is a basic part.
+
+126
+00:07:22.035 --> 00:07:25.735
+This is the part where we need to
+understand exactly the mapping between
+
+127
+00:07:25.735 --> 00:07:28.675
+Assembly language and
+machine language, which is ully,
+
+128
+00:07:28.675 --> 00:07:33.025
+usually very simple, and specified
+completely by a bunch of tables and
+
+129
+00:07:33.025 --> 00:07:37.260
+a bunch of rules of where you put
+integer numbers in the binary form.
+
+130
+00:07:37.260 --> 00:07:38.030
+And that's about it.
+
+131
+00:07:39.900 --> 00:07:44.540
+The third part is now we have basically
+the translation of each part of the input
+
+132
+00:07:44.540 --> 00:07:48.590
+and we need to put them together,
+usually just some kind of concatenation.
+
+133
+00:07:48.590 --> 00:07:52.394
+Maybe we will need to put also some
+kind of other bits that are defined in
+
+134
+00:07:52.394 --> 00:07:56.081
+the specification to actually pad them and
+complete the language.
+
+135
+00:07:56.081 --> 00:08:00.716
+Because sometimes the translation of
+a mach, of a command does not fill all
+
+136
+00:08:00.716 --> 00:08:04.730
+the available bits that are,
+are available in the machine.
+
+137
+00:08:04.730 --> 00:08:08.640
+And the other bits are specified to be
+some, let's say, a constant 0 or 1.
+
+138
+00:08:08.640 --> 00:08:14.170
+So now we have basically the number,
+the binary number that we need to output,
+
+139
+00:08:14.170 --> 00:08:18.250
+and we just need to print it out into the,
+well, some kind of file.
+
+140
+00:08:18.250 --> 00:08:21.890
+How exactly we print it out is according
+to, there's going to be some kind of
+
+141
+00:08:21.890 --> 00:08:25.320
+specification of the file
+format of machine language,
+
+142
+00:08:25.320 --> 00:08:29.900
+which may be a binary format,
+which may be just in characters 0 and 1.
+
+143
+00:08:29.900 --> 00:08:33.870
+That would be not something that
+you would usually have, and so on.
+
+144
+00:08:33.870 --> 00:08:37.394
+But then you just need to basically
+translate the numbers you have in your
+
+145
+00:08:37.394 --> 00:08:40.433
+memory, the 1s and
+0s you have in your now, in your memory.
+
+146
+00:08:40.433 --> 00:08:45.460
+You have to translate that into a format
+that the machine language can actually,
+
+147
+00:08:45.460 --> 00:08:47.800
+that the computer can actually execute.
+
+148
+00:08:47.800 --> 00:08:51.550
+So far, we've described the basic
+operation of the assembler.
+
+149
+00:08:51.550 --> 00:08:54.950
+And now there's one extra complication
+that we need to worry about, and
+
+150
+00:08:54.950 --> 00:08:57.450
+that is symbols, handling symbols.
+
+151
+00:08:57.450 --> 00:09:01.670
+As you may recall, one of the major
+services that an assembly language
+
+152
+00:09:01.670 --> 00:09:06.860
+gives a programmer is the ability to
+use symbols rather than direct numbers.
+
+153
+00:09:06.860 --> 00:09:09.580
+And we usually use them for
+two different types of things.
+
+154
+00:09:09.580 --> 00:09:13.590
+One of them is for labels in the programs
+to jump into a certain part the a program.
+
+155
+00:09:13.590 --> 00:09:17.215
+You give it a name rather than
+really hard code the address.
+
+156
+00:09:17.215 --> 00:09:20.804
+And the other is you want to give
+a variable name rather than el,
+
+157
+00:09:20.804 --> 00:09:24.390
+always refer to some to its
+exact address in memory.
+
+158
+00:09:24.390 --> 00:09:29.004
+So for example, we can write and
+view most assembly languages, JMP loop.
+
+159
+00:09:29.004 --> 00:09:30.002
+And loop of some kind,
+
+160
+00:09:30.002 --> 00:09:33.400
+is going to be translated automatically
+into some kind of address.
+
+161
+00:09:33.400 --> 00:09:38.600
+Similarly, we can load into
+a register a variable weight.
+
+162
+00:09:38.600 --> 00:09:41.700
+And again, weight is going to
+be some location in memory
+
+163
+00:09:41.700 --> 00:09:45.690
+which the assembler needs to figure
+out which location and will basically
+
+164
+00:09:45.690 --> 00:09:49.900
+translate this access directly to
+accessing that location in memory.
+
+165
+00:09:49.900 --> 00:09:52.760
+So basically what our
+assembler will have to do
+
+166
+00:09:52.760 --> 00:09:54.710
+is replace each one of these symbols.
+
+167
+00:09:54.710 --> 00:09:56.410
+For example, the weight in the,
+
+168
+00:09:56.410 --> 00:10:01.000
+in the previous eh, in the previous
+command into its equivalent address, and
+
+169
+00:10:01.000 --> 00:10:04.450
+it will have to remember where
+exactly that address in the memory.
+
+170
+00:10:04.450 --> 00:10:09.433
+Similarly, it will replace the, the, the
+label of a loop of a jump with the exact
+
+171
+00:10:09.433 --> 00:10:13.414
+address inside the program and
+again, remember where that is.
+
+172
+00:10:13.414 --> 00:10:15.315
+How does that happen
+how will that be done?
+
+173
+00:10:15.315 --> 00:10:20.125
+Wel,l it will need to maintain some kind
+of sym, of, of table that basically has
+
+174
+00:10:20.125 --> 00:10:25.249
+the, the information about the translation
+between symbols and actual addresses.
+
+175
+00:10:25.249 --> 00:10:27.537
+And whenever it needs
+to do this translation,
+
+176
+00:10:27.537 --> 00:10:29.776
+it will have to actually
+look up in the table.
+
+177
+00:10:29.776 --> 00:10:33.027
+It sees weight in the assembly
+language program.
+
+178
+00:10:33.027 --> 00:10:34.801
+It will have to look up in the table and
+
+179
+00:10:34.801 --> 00:10:37.880
+see what is the correct
+address to put instead of it.
+
+180
+00:10:37.880 --> 00:10:40.040
+Once it's replaced
+the symbol with a address,
+
+181
+00:10:40.040 --> 00:10:43.050
+then it can continue as
+we previously described.
+
+182
+00:10:43.050 --> 00:10:46.850
+So let us see now how do
+we maintain such a table,
+
+183
+00:10:46.850 --> 00:10:50.430
+how do we enter information into it, and
+how do we look up information from it.
+
+184
+00:10:52.270 --> 00:10:56.810
+So for example, let's say we, now our
+assembler is reading command by command,
+
+185
+00:10:56.810 --> 00:11:00.890
+and it encountered this command
+with a variable weight in it.
+
+186
+00:11:00.890 --> 00:11:05.470
+So, maybe the variable is already in the
+table, we need to look it up in the table.
+
+187
+00:11:05.470 --> 00:11:08.770
+If it's already in the table,
+then we know exactly how to translate it.
+
+188
+00:11:08.770 --> 00:11:09.560
+This is the easy part.
+
+189
+00:11:10.610 --> 00:11:13.870
+But what happens the first time
+we see this variable, weight?
+
+190
+00:11:13.870 --> 00:11:17.450
+Well, we look at it, we look in the table,
+and we see that it's not there.
+
+191
+00:11:17.450 --> 00:11:20.978
+So, we know that we need to allocate
+a new memory location to had,
+
+192
+00:11:20.978 --> 00:11:22.272
+to hold this variable.
+
+193
+00:11:22.272 --> 00:11:26.190
+And this is one of the things that
+our assembler will have to do.
+
+194
+00:11:26.190 --> 00:11:30.570
+So, it will actually find the next
+memory location that's available, and
+
+195
+00:11:30.570 --> 00:11:34.070
+the exact definition of where
+does it allocate memory addresses
+
+196
+00:11:34.070 --> 00:11:38.450
+should be part of the assembly,
+assembly language specification.
+
+197
+00:11:38.450 --> 00:11:42.850
+And it will basically allocate
+this new memory to the symbol.
+
+198
+00:11:42.850 --> 00:11:48.210
+And now, it has this pair of symbol memory
+address that it can put into the table,
+
+199
+00:11:48.210 --> 00:11:51.230
+and use from now on, including for now.
+
+200
+00:11:51.230 --> 00:11:52.660
+And this is how, basically,
+
+201
+00:11:52.660 --> 00:11:57.450
+we put a variable locations into
+the table, and how we use them.
+
+202
+00:11:59.450 --> 00:12:02.799
+The other kind of la, the other kind
+of symbol that we have are labels.
+
+203
+00:12:02.799 --> 00:12:07.546
+So let's see we have, well, let's see,
+for example, we have a piece of
+
+204
+00:12:07.546 --> 00:12:12.690
+code that has inside, that had in it
+a label loop, what does this mean?
+
+205
+00:12:12.690 --> 00:12:16.140
+When our assembler actually looks and
+reads this line,
+
+206
+00:12:16.140 --> 00:12:20.480
+label, it knows well this is just a label,
+it's not a real command to execute.
+
+207
+00:12:20.480 --> 00:12:24.440
+But I have to remember that the next
+time somebody wants to jump
+
+208
+00:12:24.440 --> 00:12:28.360
+to this symbol loop,
+I have to remember where exactly it is.
+
+209
+00:12:28.360 --> 00:12:29.240
+Where is it?
+
+210
+00:12:29.240 --> 00:12:33.150
+Well, I have to remember where,
+what address is the current
+
+211
+00:12:33.150 --> 00:12:37.920
+command going to be put into the,
+into, into the memory.
+
+212
+00:12:37.920 --> 00:12:40.950
+And that is going to be the address
+that's referred to by loop.
+
+213
+00:12:40.950 --> 00:12:45.245
+So for example, if our,
+prog, if our current,
+
+214
+00:12:45.245 --> 00:12:50.304
+if this current piece of program
+is being allocated into,
+
+215
+00:12:50.304 --> 00:12:54.886
+being put,
+being written into memory location 671,
+
+216
+00:12:54.886 --> 00:12:59.197
+672, 673, and so on,
+of the program memory.
+
+217
+00:12:59.197 --> 00:13:00.838
+When we see this label,
+
+218
+00:13:00.838 --> 00:13:06.186
+our assembler will have to remember
+the next program is program 673.
+
+219
+00:13:06.186 --> 00:13:13.175
+So I need to remember that loop from
+now on always refers to location 673.
+
+220
+00:13:13.175 --> 00:13:15.055
+And this is basically the kind
+of thing that it needs to do.
+
+221
+00:13:16.330 --> 00:13:20.750
+And then, when we actually get
+to a place that uses this label,
+
+222
+00:13:20.750 --> 00:13:23.330
+uses this symbol, then we already know,
+
+223
+00:13:23.330 --> 00:13:27.160
+we already have in our table what
+exactly is the correct address.
+
+224
+00:13:27.160 --> 00:13:32.090
+So that's basically how information is,
+about labels, is put into the table and
+
+225
+00:13:32.090 --> 00:13:33.772
+read from it when needed.
+
+226
+00:13:33.772 --> 00:13:38.510
+Now, there's one extra complication
+that we didn't talk about.
+
+227
+00:13:38.510 --> 00:13:40.360
+That sometimes we can use,
+
+228
+00:13:40.360 --> 00:13:44.790
+we can jump into a label before
+the label was actually defined.
+
+229
+00:13:44.790 --> 00:13:46.620
+This is called a forward reference.
+
+230
+00:13:46.620 --> 00:13:50.922
+So for example, it's very common in,
+in programs that I will need to jump,
+
+231
+00:13:50.922 --> 00:13:53.050
+let's say, into a label called continuing,
+
+232
+00:13:53.050 --> 00:13:57.080
+cont, before the label actually
+occurred in the program.
+
+233
+00:13:57.080 --> 00:14:00.670
+If that is the case,
+when I reach the first jump, when I first,
+
+234
+00:14:00.670 --> 00:14:03.490
+the, the jump instructions,
+it uses a label.
+
+235
+00:14:03.490 --> 00:14:07.230
+That happens before I've already seen
+the place that defines the label
+
+236
+00:14:07.230 --> 00:14:12.710
+in the label command, and how can I handle
+that because it's not in the table yet.
+
+237
+00:14:12.710 --> 00:14:14.940
+Well, there are two ways to handle it.
+
+238
+00:14:14.940 --> 00:14:19.320
+One way, which is usually a little bit
+more complicated, is to basically remember
+
+239
+00:14:19.320 --> 00:14:22.200
+that I've seen the labels, and
+I don't know where it is yet.
+
+240
+00:14:22.200 --> 00:14:23.830
+Keep it in a side table.
+
+241
+00:14:23.830 --> 00:14:27.010
+And when I actually get into
+the definition of the correct address,
+
+242
+00:14:27.010 --> 00:14:27.650
+fix it back.
+
+243
+00:14:29.258 --> 00:14:33.870
+Another, another option,
+which turns out to be sometimes easier,
+
+244
+00:14:33.870 --> 00:14:37.670
+is that I actually do
+everything in two passes.
+
+245
+00:14:37.670 --> 00:14:42.210
+In the first pass, I read everything
+only paying attention to the labels and
+
+246
+00:14:42.210 --> 00:14:45.340
+remembering where each label refers to.
+
+247
+00:14:45.340 --> 00:14:49.680
+That, that's when i actually
+build the table for the labels.
+
+248
+00:14:49.680 --> 00:14:53.570
+And only on the second pass do I
+actually go and put and convert each and
+
+249
+00:14:53.570 --> 00:14:57.300
+every label into its correct code,
+into its correct address,
+
+250
+00:14:57.300 --> 00:15:01.500
+that now is already in the table,
+because I put it there in the first pass.
+
+251
+00:15:01.500 --> 00:15:05.130
+And that's a usual,
+usually slightly easier to do, but
+
+252
+00:15:05.130 --> 00:15:07.440
+you may use each one of
+these two possibilities.
+
+253
+00:15:09.310 --> 00:15:13.851
+So now we've finished talking about the
+general process of creating an assembler,
+
+254
+00:15:13.851 --> 00:15:16.165
+the general thing that
+an assembler must do.
+
+255
+00:15:16.165 --> 00:15:19.679
+And what we're going to do in
+the next few units is start talking
+
+256
+00:15:19.679 --> 00:15:22.534
+specifically about the Hack
+machine assembler and
+
+257
+00:15:22.534 --> 00:15:26.203
+talk about the different parts of
+how you actually construct it.

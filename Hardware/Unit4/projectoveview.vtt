@@ -1,0 +1,1206 @@
+WEBVTT
+
+1
+00:00:06.151 --> 00:00:11.597
+I wish to remind you that next week,
+we're going to take all the chips and
+
+2
+00:00:11.597 --> 00:00:16.687
+the logic gates we've built in
+previous weeks of this course,
+
+3
+00:00:16.687 --> 00:00:20.975
+and we're going to assemble
+them together into a unified
+
+4
+00:00:20.975 --> 00:00:25.388
+hardware platform which we call the,
+the Hack computer.
+
+5
+00:00:25.388 --> 00:00:31.416
+Now, in order to set up to this
+very engaging and interesting
+
+6
+00:00:31.416 --> 00:00:36.586
+construction work, we decided that
+this week we have to give you
+
+7
+00:00:36.586 --> 00:00:42.530
+a good overview of what is it
+exactly that you're going to build.
+
+8
+00:00:42.530 --> 00:00:47.375
+And that's one reason why we decided
+to explore all these notions of
+
+9
+00:00:47.375 --> 00:00:52.200
+low-level programming the Hack assembly
+language, and the Hack hardware,
+
+10
+00:00:52.200 --> 00:00:57.850
+because at this very low-level of
+operation, everything is tightly coupled.
+
+11
+00:00:57.850 --> 00:01:02.800
+When you build the computer,
+you have think about its instruction set.
+
+12
+00:01:02.800 --> 00:01:05.120
+When you design the machine language or
+
+13
+00:01:05.120 --> 00:01:08.270
+the instruction set,
+you have to think about the computer.
+
+14
+00:01:08.270 --> 00:01:09.270
+There's no way to avoid it.
+
+15
+00:01:09.270 --> 00:01:13.674
+So once again,
+the purpose of of this week was,
+
+16
+00:01:13.674 --> 00:01:17.848
+first of all,
+to expose you to low-level programming but
+
+17
+00:01:17.848 --> 00:01:22.649
+we also wanted to give you a feeling of a,
+of the harder platform that
+
+18
+00:01:22.649 --> 00:01:26.637
+you're actually going to
+implement in the next week.
+
+19
+00:01:26.637 --> 00:01:32.860
+And this is also the purpose
+of of Project 4.
+
+20
+00:01:32.860 --> 00:01:38.877
+In Project 4 you will write two programs
+that will let you put your hands on,
+
+21
+00:01:38.877 --> 00:01:43.389
+on the hardware and, and
+program it in a, in a very low-level,
+
+22
+00:01:43.389 --> 00:01:49.000
+i, in a level which is almost
+connected to the machine.
+
+23
+00:01:49.000 --> 00:01:55.080
+So we'll do this by writing two
+relatively simple pro, programs.
+
+24
+00:01:55.080 --> 00:01:59.869
+The first program will affect
+some algebraic manipulation, and
+
+25
+00:01:59.869 --> 00:02:03.683
+the second program will
+interact with the user
+
+26
+00:02:03.683 --> 00:02:07.270
+operating on both the screen and
+the keyboard.
+
+27
+00:02:07.270 --> 00:02:14.074
+All right, so without further ado here is
+the first program which is called Mult.
+
+28
+00:02:14.074 --> 00:02:20.367
+And the purpose of this program
+is to compute the product,
+
+29
+00:02:20.367 --> 00:02:24.741
+or the multiplication, of R0 and R1.
+
+30
+00:02:24.741 --> 00:02:30.100
+So here's a screenshot of this
+program executing in the CPU Emulator.
+
+31
+00:02:30.100 --> 00:02:36.360
+In fact, it's a screenshot of
+the end of this program's execution.
+
+32
+00:02:36.360 --> 00:02:40.787
+If you look carefully
+at the top of the RAM,
+
+33
+00:02:40.787 --> 00:02:47.040
+you will see that RAM 0 is 6,
+RAM 1 is 7, and RAM 2 is 42.
+
+34
+00:02:47.040 --> 00:02:49.880
+And that's exactly what this
+program is supposed to do,
+
+35
+00:02:49.880 --> 00:02:55.270
+to multiply the first two registers
+in the memory and compute the,
+
+36
+00:02:55.270 --> 00:03:01.120
+and, and, and place the product
+of these two numbers in RAM 2.
+
+37
+00:03:01.120 --> 00:03:04.250
+So the assumption is that once the user
+
+38
+00:03:04.250 --> 00:03:08.660
+has loaded this program into the data
+memory into the instruction memory,
+
+39
+00:03:08.660 --> 00:03:13.610
+the user also places two numbers
+in RAM 0 and RAM, RAM 1.
+
+40
+00:03:13.610 --> 00:03:18.790
+Clicks the Go button or
+the Play button starts playing and if
+
+41
+00:03:18.790 --> 00:03:23.678
+everything works nicely the program will
+compute the product of these two numbers.
+
+42
+00:03:23.678 --> 00:03:29.091
+On the right-hand side,
+in the screen area we see a script
+
+43
+00:03:29.091 --> 00:03:34.110
+that we supply together with this project.
+
+44
+00:03:34.110 --> 00:03:39.270
+And the script is designed to to test
+the program using some pairs of numbers
+
+45
+00:03:39.270 --> 00:03:42.120
+that that we made up.
+
+46
+00:03:42.120 --> 00:03:46.820
+And obviously you can explore the script
+as well in order to see what kind of tests
+
+47
+00:03:46.820 --> 00:03:50.310
+we are going to subject
+your programmer to.
+
+48
+00:03:50.310 --> 00:03:55.744
+And you know, this is maybe also the place
+to point out that in the simulator,
+
+49
+00:03:55.744 --> 00:04:01.690
+in, in the CPU Emulator, we use the screen
+as sort of a multi-purpose device.
+
+50
+00:04:01.690 --> 00:04:04.950
+Sometimes it works as
+a real physical screen.
+
+51
+00:04:04.950 --> 00:04:09.580
+Sometimes, we use it as a window
+to display our test scripts,
+
+52
+00:04:09.580 --> 00:04:11.232
+test scripts and, and so on.
+
+53
+00:04:12.472 --> 00:04:17.752
+All right, so once again, in this area
+you see the input the two inputs and
+
+54
+00:04:17.752 --> 00:04:19.879
+the, the output of the program.
+
+55
+00:04:19.879 --> 00:04:24.953
+And I guess the question that burns right
+now is how do we write such a program?
+
+56
+00:04:24.953 --> 00:04:29.965
+Well recall, that the, the Hack machine
+
+57
+00:04:29.965 --> 00:04:35.310
+language doesn't have
+a multiplication operation.
+
+58
+00:04:36.452 --> 00:04:38.510
+All we have is addition and subtraction.
+
+59
+00:04:38.510 --> 00:04:42.419
+So we're faced with a challenge of
+expressing a multiplication operation
+
+60
+00:04:42.419 --> 00:04:44.986
+using addition and subtraction.
+
+61
+00:04:44.986 --> 00:04:49.350
+I don't think that I have
+to say much more than this,
+
+62
+00:04:49.350 --> 00:04:52.834
+I can give you perhaps only one more hint.
+
+63
+00:04:52.834 --> 00:04:54.133
+You will have to use a loop.
+
+64
+00:04:54.133 --> 00:05:01.240
+And using this loop,
+you will somehow compute the the result.
+
+65
+00:05:02.510 --> 00:05:09.587
+By the way those of you who will choose to
+take part two of this course, I meant to
+
+66
+00:05:09.587 --> 00:05:15.170
+that as part two, will also go through the
+process of developing an operating system.
+
+67
+00:05:15.170 --> 00:05:20.910
+And one thing that our operating system
+is going to deliver, to deliver is a,
+
+68
+00:05:20.910 --> 00:05:26.420
+is a math library that features all
+sorts of mathematical operations,
+
+69
+00:05:26.420 --> 00:05:29.970
+and one of these mathematical
+operations is going to be multiply.
+
+70
+00:05:29.970 --> 00:05:35.389
+And the multiplication algorithm that
+you will use in the operating system is,
+
+71
+00:05:35.389 --> 00:05:41.386
+extremely efficient and something that we
+don't expect you to do in this exercise.
+
+72
+00:05:41.386 --> 00:05:46.227
+In this exercise we simply expect you to
+somehow multiply the two numbers and,
+
+73
+00:05:46.227 --> 00:05:50.397
+you know, maybe you can try to do it as,
+as efficiently as you can.
+
+74
+00:05:50.397 --> 00:05:54.240
+But we don't expect you to
+get out of your way and
+
+75
+00:05:54.240 --> 00:05:59.953
+come up with some very fancy algorithms
+to, to carry out multiplication.
+
+76
+00:05:59.953 --> 00:06:03.040
+All right, so this the first assignment.
+
+77
+00:06:04.120 --> 00:06:09.780
+And the second assignment is to
+write a simple interactive program
+
+78
+00:06:09.780 --> 00:06:12.990
+that performs the following operation.
+
+79
+00:06:14.750 --> 00:06:19.870
+This program listens to the keyboard, and
+
+80
+00:06:19.870 --> 00:06:25.480
+as long as the user does nothing
+with the keyboard, nothing happens.
+
+81
+00:06:25.480 --> 00:06:30.260
+But once the user touches a key on
+the keyboard, any key, you know,
+
+82
+00:06:30.260 --> 00:06:32.730
+once you touch a key look what happens.
+
+83
+00:06:34.124 --> 00:06:37.970
+The program blackens
+the screen completely.
+
+84
+00:06:37.970 --> 00:06:45.353
+And once you lift your finger from the
+keyboard, the screen becomes again clear.
+
+85
+00:06:45.353 --> 00:06:48.479
+You put your finger again
+on any key on the keyboard,
+
+86
+00:06:48.479 --> 00:06:50.833
+the key the screen becomes black.
+
+87
+00:06:50.833 --> 00:06:57.079
+You take your you take your finger away,
+the screen becomes clear.
+
+88
+00:06:57.079 --> 00:06:58.878
+That's what this program is doing.
+
+89
+00:06:58.878 --> 00:07:03.724
+It is going through some,
+some sort of infinite loop that
+
+90
+00:07:03.724 --> 00:07:08.400
+listens to the keyboard all the time and
+acts accordingly.
+
+91
+00:07:09.420 --> 00:07:16.200
+So actually we have here
+two separate challenges.
+
+92
+00:07:16.200 --> 00:07:20.240
+One of them is to probe the keyboard and,
+and understand what the, you know,
+
+93
+00:07:20.240 --> 00:07:23.420
+whether or not any key is pressed.
+
+94
+00:07:23.420 --> 00:07:31.140
+And the other challenge is to be able to
+blacken the screen or whiten the screen,
+
+95
+00:07:31.140 --> 00:07:35.540
+which is essentially the same
+operation in one we write a certain
+
+96
+00:07:35.540 --> 00:07:40.680
+value to the memory map and in the other
+operation we, we write some other value.
+
+97
+00:07:40.680 --> 00:07:43.880
+What makes this exercise somewhat easy
+
+98
+00:07:43.880 --> 00:07:48.320
+is the fact that we operate
+on the entire memory map.
+
+99
+00:07:48.320 --> 00:07:53.097
+So we don't have to be picky and
+select certain pixels to turn on and
+
+100
+00:07:53.097 --> 00:07:55.859
+off, we simply sort of a shotgun approach,
+
+101
+00:07:55.859 --> 00:07:59.540
+we either turn on all the pixels or
+turn off all the pixels.
+
+102
+00:07:59.540 --> 00:08:02.541
+In that respect the program is
+is not terribly complicated and
+
+103
+00:08:02.541 --> 00:08:06.053
+in general it's not, it's not really
+a terribly complicated program.
+
+104
+00:08:06.053 --> 00:08:10.511
+But it's kind of fun.
+
+105
+00:08:10.511 --> 00:08:15.387
+You know, it allows you to see how you,
+you can control peripheral
+
+106
+00:08:15.387 --> 00:08:20.562
+devices using a,
+a standard Hack machine language called.
+
+107
+00:08:20.562 --> 00:08:25.120
+All right, so here is the general
+implementation strategy.
+
+108
+00:08:26.780 --> 00:08:27.770
+Listen to the keyboard.
+
+109
+00:08:29.170 --> 00:08:30.990
+To blacken or create a screen,
+
+110
+00:08:30.990 --> 00:08:35.870
+we write code that fills the entire screen
+memory map with white or black pixels.
+
+111
+00:08:35.870 --> 00:08:41.150
+And in order to do this,
+we have to address every register
+
+112
+00:08:41.150 --> 00:08:45.020
+in the memory map, and
+we do it using some sort of a loop.
+
+113
+00:08:45.020 --> 00:08:49.370
+That works with pointers in a very
+similar way to what we did in
+
+114
+00:08:49.370 --> 00:08:54.490
+in the previous unit when we
+discussed pointers manipulation.
+
+115
+00:08:54.490 --> 00:08:58.710
+So you really have all the firepower
+that you need in order to,
+
+116
+00:08:58.710 --> 00:09:00.820
+to implement this particular program.
+
+117
+00:09:01.950 --> 00:09:07.080
+In order to test this program on
+the CPU Emulator, make sure that
+
+118
+00:09:07.080 --> 00:09:12.230
+the no animation selection is is selected,
+and
+
+119
+00:09:12.230 --> 00:09:17.472
+also, we cannot provide a test
+script that tests this program,
+
+120
+00:09:17.472 --> 00:09:21.288
+or, or we can, but we,
+we thought that it would be too com,
+
+121
+00:09:21.288 --> 00:09:24.630
+too complicated, so
+you simply have to test it.
+
+122
+00:09:24.630 --> 00:09:28.570
+As I di, demonstrated, you know, put
+your finger down, put your finger up and
+
+123
+00:09:28.570 --> 00:09:32.230
+hope that the screen will be blackened or
+whitened and so on.
+
+124
+00:09:34.000 --> 00:09:36.020
+You can also think, if you want,
+
+125
+00:09:36.020 --> 00:09:40.580
+you can think about some fancy ways
+to blacken or whiten the screen.
+
+126
+00:09:40.580 --> 00:09:43.542
+You know,
+instead of going line-by-line, you wa,
+
+127
+00:09:43.542 --> 00:09:45.570
+you may want to go column-by-column.
+
+128
+00:09:45.570 --> 00:09:48.322
+You wa, you may want to create some this,
+
+129
+00:09:48.322 --> 00:09:52.932
+this will be quite challenging to
+create some drawing you know swirls.
+
+130
+00:09:52.932 --> 00:09:54.671
+I don't know.
+
+131
+00:09:54.671 --> 00:09:56.111
+You can, you use your imagination.
+
+132
+00:09:56.111 --> 00:09:59.524
+Do whatever you want in order
+to blacken or whiten the screen.
+
+133
+00:09:59.524 --> 00:10:07.986
+And and that's actually what is expected
+from you in in this particular program.
+
+134
+00:10:07.986 --> 00:10:12.811
+All right I want to describe some general
+
+135
+00:10:12.811 --> 00:10:18.217
+things about the overall
+program development process or
+
+136
+00:10:18.217 --> 00:10:25.226
+cycle when you want to write programs
+in the Hack machine language.
+
+137
+00:10:25.226 --> 00:10:28.822
+First of all,
+your programs are going to reside
+
+138
+00:10:28.822 --> 00:10:34.200
+within regular text files that you
+can write with any text editor.
+
+139
+00:10:34.200 --> 00:10:37.550
+So, you invoke your favorite text editor.
+
+140
+00:10:37.550 --> 00:10:38.540
+You write the program.
+
+141
+00:10:38.540 --> 00:10:42.410
+You save it using the extension asm.
+
+142
+00:10:42.410 --> 00:10:48.510
+And by convention we give our programs
+names that begin with capital letters so
+
+143
+00:10:48.510 --> 00:10:51.210
+we give it a name, .asm.
+
+144
+00:10:51.210 --> 00:10:57.080
+And then you load this program
+as is into the CPU Emulator.
+
+145
+00:10:57.080 --> 00:11:00.930
+As I explained before, the CPU Emulator
+has this very nice service.
+
+146
+00:11:00.930 --> 00:11:04.656
+That when you load the program it
+automatically translates the program into
+
+147
+00:11:04.656 --> 00:11:06.732
+binary code.
+
+148
+00:11:06.732 --> 00:11:11.770
+So you can next run the program
+on the CPU Emulator and
+
+149
+00:11:11.770 --> 00:11:15.220
+ask yourself if you're
+satisfied with the results.
+
+150
+00:11:15.220 --> 00:11:17.070
+If so, you are done.
+
+151
+00:11:17.070 --> 00:11:20.320
+You can submit the program to us and
+
+152
+00:11:20.320 --> 00:11:24.990
+if you are unsatisfied with the program
+which will be a probably the case in
+
+153
+00:11:24.990 --> 00:11:29.360
+the first few iterations of the debugging,
+then you will, you fix the program.
+
+154
+00:11:29.360 --> 00:11:34.620
+You look for errors and you fix
+the errors and you fix them by going back
+
+155
+00:11:34.620 --> 00:11:39.710
+into the text editor, you know, working
+in the editor, saving the program again.
+
+156
+00:11:39.710 --> 00:11:42.650
+Reloading it into the CPU Emulator,
+and so on.
+
+157
+00:11:42.650 --> 00:11:46.160
+So it's quite convenient to
+have two windows open on the,
+
+158
+00:11:46.160 --> 00:11:51.290
+on your screen at the same time, the text
+editor here, CPU Emulator there, and
+
+159
+00:11:51.290 --> 00:11:55.550
+you can easily, you know,
+move between the two but
+
+160
+00:11:55.550 --> 00:12:00.350
+don't forget to load your updated
+program after you you fix it.
+
+161
+00:12:02.620 --> 00:12:08.500
+The error diagnostics of
+the CPU Emulator is quite primitive.
+
+162
+00:12:08.500 --> 00:12:14.840
+So when you load the program into
+the CPU Emulator, if there's a syntax
+
+163
+00:12:14.840 --> 00:12:19.980
+error in this program, the CPU Emulator
+will simply refuse to load it.
+
+164
+00:12:19.980 --> 00:12:25.474
+It will issue some cryptic error
+message something like oh,
+
+165
+00:12:25.474 --> 00:12:30.394
+it will give you some very important
+information and to give you the line
+
+166
+00:12:30.394 --> 00:12:34.752
+number with error occurred and
+the first error that was found.
+
+167
+00:12:34.752 --> 00:12:38.243
+And then you can go into this line
+number and and fix the problem.
+
+168
+00:12:38.243 --> 00:12:42.826
+And once you, you are done with the,
+with the syntax e, errors,
+
+169
+00:12:42.826 --> 00:12:46.034
+well, then the real problems begin,
+you know?
+
+170
+00:12:46.034 --> 00:12:48.842
+These are the run-time errors,
+which are much harder to detect.
+
+171
+00:12:48.842 --> 00:12:54.162
+And you typically detect them by
+watching the execution of your program,
+
+172
+00:12:54.162 --> 00:12:57.214
+seeing that something
+does not work properly.
+
+173
+00:12:57.214 --> 00:13:00.093
+And then once again you have
+to go through the same cycle.
+
+174
+00:13:00.093 --> 00:13:03.912
+And fix your program until it
+works to your satisfaction.
+
+175
+00:13:03.912 --> 00:13:08.985
+So this is the general mechanics
+of developing a program
+
+176
+00:13:08.985 --> 00:13:12.296
+using a CPU Emulator and a text editor.
+
+177
+00:13:12.296 --> 00:13:19.679
+And as you see it, it's quite,
+it's quite simple and friendly.
+
+178
+00:13:19.679 --> 00:13:24.433
+All right finally I want to say
+a few words about best practice and
+
+179
+00:13:24.433 --> 00:13:27.327
+advice on do's and do, and don'ts.
+
+180
+00:13:27.327 --> 00:13:32.231
+There's no reason really
+to think about a machine
+
+181
+00:13:32.231 --> 00:13:37.255
+language programs as some sort of a,
+a strange animal.
+
+182
+00:13:37.255 --> 00:13:43.650
+It's yet another example of a,
+a programming art effect.
+
+183
+00:13:43.650 --> 00:13:47.890
+And all the principles that
+applied to writing programs
+
+184
+00:13:47.890 --> 00:13:51.410
+in a high-level language
+also apply at the low level.
+
+185
+00:13:51.410 --> 00:13:57.420
+We expect your programs to be short,
+or not unnecessarily long.
+
+186
+00:13:57.420 --> 00:14:02.270
+They should be short, they should be
+efficient, they should be elegant, and
+
+187
+00:14:02.270 --> 00:14:04.770
+they should be self-describing.
+
+188
+00:14:04.770 --> 00:14:11.820
+So we expect you to document the programs,
+but do it by using some judgment.
+
+189
+00:14:11.820 --> 00:14:14.700
+You know, don't over-document the program.
+
+190
+00:14:14.700 --> 00:14:19.950
+The best, I think thing to do is
+simply to look at our examples and
+
+191
+00:14:19.950 --> 00:14:23.760
+to follow something similar,
+so, you know, typically
+
+192
+00:14:25.520 --> 00:14:30.540
+we use some high-level
+operation to describe you know?
+
+193
+00:14:30.540 --> 00:14:35.280
+We start a comment, we write something
+like, here we're going to say,
+
+194
+00:14:35.280 --> 00:14:39.320
+if i is greater than n, goto,
+and then, we write the 6 or
+
+195
+00:14:39.320 --> 00:14:45.350
+7 instructions in machine code that
+actually implement this this semantics.
+
+196
+00:14:46.870 --> 00:14:53.390
+Now here's some very important technical
+tips that will make your life easier.
+
+197
+00:14:53.390 --> 00:14:59.270
+First of all, you must use
+symbolic variables and labels.
+
+198
+00:14:59.270 --> 00:15:02.900
+You know, otherwise your
+programs will be helplessly and
+
+199
+00:15:02.900 --> 00:15:07.140
+hopelessly complex, and and cryptic.
+
+200
+00:15:07.140 --> 00:15:12.360
+So, if you want to go to somewhere
+in your program, use a label.
+
+201
+00:15:12.360 --> 00:15:16.536
+If you want to store something
+repetitively, make up a variable name.
+
+202
+00:15:16.536 --> 00:15:20.640
+So, when you're done writing the program,
+you know, look at it,
+
+203
+00:15:20.640 --> 00:15:25.030
+and make sure that you don't see any
+actual educes there, you have to make
+
+204
+00:15:25.030 --> 00:15:29.340
+sure that everything is symbolic, you
+know, this is one very important ritual,
+
+205
+00:15:29.340 --> 00:15:34.810
+of well-written machine language,
+language programs.
+
+206
+00:15:34.810 --> 00:15:36.660
+When you invent your variables and
+
+207
+00:15:36.660 --> 00:15:42.030
+your labels, as usual in programming,
+use sensible names.
+
+208
+00:15:42.030 --> 00:15:49.260
+You know, don't make cryptic names like
+gu5 3 percent or something like this.
+
+209
+00:15:49.260 --> 00:15:55.723
+Use instead something like loop end,
+stop, positive, negative.
+
+210
+00:15:55.723 --> 00:15:58.793
+You know, depending on what
+is it that you want to do,
+
+211
+00:15:58.793 --> 00:16:02.910
+try to use sensible label names and,
+likewise, variable names.
+
+212
+00:16:02.910 --> 00:16:08.713
+You know, use nice names, like i,
+end, some, count, and, and so on.
+
+213
+00:16:08.713 --> 00:16:15.356
+Now, when you declare or, or
+when you use these variable names,
+
+214
+00:16:15.356 --> 00:16:21.300
+use lower-case for variables and
+upper-case for labels.
+
+215
+00:16:21.300 --> 00:16:24.940
+If you go back to our program examples,
+you will see that all the labels,
+
+216
+00:16:24.940 --> 00:16:29.090
+you know typically words like END and
+STOP were uppercase, and
+
+217
+00:16:29.090 --> 00:16:34.250
+all the variables i, n, x,
+y and so on were lower case.
+
+218
+00:16:34.250 --> 00:16:37.910
+If you follow this convention, which
+is not required by the way, you know,
+
+219
+00:16:37.910 --> 00:16:41.730
+it's, it's not something that they,
+that the assembler cares about.
+
+220
+00:16:41.730 --> 00:16:45.735
+But if you use this convention you
+will have a very easy time for
+
+221
+00:16:45.735 --> 00:16:49.440
+yourself to distinguish
+between variables and labels.
+
+222
+00:16:49.440 --> 00:16:53.810
+So when you see an @ command when
+an A command, when you see something about
+
+223
+00:16:53.810 --> 00:16:57.287
+@sum, if the sum is lower-case,
+you know it's a variable.
+
+224
+00:16:57.287 --> 00:17:02.800
+If it's uppercase, you know that we
+mean to go to a label called SUM.
+
+225
+00:17:03.942 --> 00:17:06.600
+And finally, use indentation.
+
+226
+00:17:08.240 --> 00:17:13.220
+Once again, follow the examples
+that we gave in the previous units,
+
+227
+00:17:13.220 --> 00:17:17.920
+and make sure that your programs
+are good-looking and easy to read.
+
+228
+00:17:17.920 --> 00:17:23.680
+And it's always recommend, recommended,
+to start with pseudo code.
+
+229
+00:17:23.680 --> 00:17:27.720
+Writing machine level code
+is always challenging.
+
+230
+00:17:27.720 --> 00:17:32.040
+And your life will be much
+easier if you first, you know,
+
+231
+00:17:32.040 --> 00:17:36.150
+make up the program or
+write the program using some,
+
+232
+00:17:36.150 --> 00:17:41.260
+some sort of a high-level language
+that you can make up for yourself.
+
+233
+00:17:41.260 --> 00:17:43.900
+Or once again, follow our examples.
+
+234
+00:17:43.900 --> 00:17:47.440
+Once the program works
+nicely in pseudo code, and
+
+235
+00:17:47.440 --> 00:17:52.060
+this something that you have to, to check
+on, on a piece of paper, you can then
+
+236
+00:17:52.060 --> 00:17:57.184
+translate it into machine language and
+continue the debugging process.
+
+237
+00:17:57.184 --> 00:18:00.720
+All right where do you
+find everything you need?
+
+238
+00:18:00.720 --> 00:18:04.210
+Well as usual,
+you go to the NAND to Tetris website.
+
+239
+00:18:05.260 --> 00:18:07.310
+You look at Project 4.
+
+240
+00:18:07.310 --> 00:18:09.443
+All the files that you need for
+
+241
+00:18:09.443 --> 00:18:14.060
+this exercise are described in for
+this project.
+
+242
+00:18:14.060 --> 00:18:17.636
+I'm sorry,
+are described in in this webpage, and
+
+243
+00:18:17.636 --> 00:18:20.023
+there's no need to download anything,
+
+244
+00:18:20.023 --> 00:18:24.582
+because if you downloaded the software
+suite at the beginning of the course,
+
+245
+00:18:24.582 --> 00:18:29.662
+you now have on your personal computer,
+you have a directory called project/04.
+
+246
+00:18:29.662 --> 00:18:34.940
+And this directory already
+contains all the files that
+
+247
+00:18:34.940 --> 00:18:39.940
+you have to use and and
+manipulate in in Project 4.
+
+248
+00:18:39.940 --> 00:18:46.100
+So this has been
+the the unit in which we we
+
+249
+00:18:46.100 --> 00:18:51.980
+hopefully give you some tips on how to how
+to write the, the programs in Project 4.
+
+250
+00:18:51.980 --> 00:18:55.740
+And we now go on to
+the last unit in this week
+
+251
+00:18:55.740 --> 00:19:00.544
+in which we reflect on what we
+did during the entire week.

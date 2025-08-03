@@ -1,0 +1,1337 @@
+WEBVTT
+
+1
+00:00:03.795 --> 00:00:08.540
+In this unit, we'll talk about
+how the assembler represents and
+
+2
+00:00:08.540 --> 00:00:11.221
+handles symbols using binary code.
+
+3
+00:00:12.380 --> 00:00:16.315
+So the general problem that we
+are facing is writing an assembler for
+
+4
+00:00:16.315 --> 00:00:18.128
+the Hack machine language.
+
+5
+00:00:18.128 --> 00:00:23.013
+And the development strategy
+that we adopted was one
+
+6
+00:00:23.013 --> 00:00:28.130
+of delaying the treatment of
+symbols to a later stage.
+
+7
+00:00:28.130 --> 00:00:32.030
+Well, this later stage has has come up,
+and
+
+8
+00:00:32.030 --> 00:00:36.860
+we now have to deal with
+symbols explicitly.
+
+9
+00:00:36.860 --> 00:00:41.290
+I want to remind you that we already
+know how to handle white space and
+
+10
+00:00:41.290 --> 00:00:46.570
+instructions, and
+therefore we now want to focus on symbols.
+
+11
+00:00:46.570 --> 00:00:47.440
+And as usual,
+
+12
+00:00:47.440 --> 00:00:52.830
+I use red ink to highlight all
+the symbols in this particular example.
+
+13
+00:00:52.830 --> 00:00:56.650
+And as you can see,
+there are quite a few of them.
+
+14
+00:00:56.650 --> 00:01:02.579
+And I think I mentioned it before, this is
+very typical in programming in general and
+
+15
+00:01:02.579 --> 00:01:06.082
+machine language
+programming in particular.
+
+16
+00:01:06.082 --> 00:01:09.620
+The more symbols you have,
+the more expressive and
+
+17
+00:01:09.620 --> 00:01:13.401
+easy to read is the program,
+and therefore, we,
+
+18
+00:01:13.401 --> 00:01:18.501
+we encourage programmers to use symbols,
+which means that the assembler
+
+19
+00:01:18.501 --> 00:01:24.400
+has to work hard to resolve these
+symbols into, into binary code.
+
+20
+00:01:24.400 --> 00:01:29.710
+But once we do it, we achieve something
+very remarkable, because symbolic
+
+21
+00:01:29.710 --> 00:01:36.190
+programming is a very nice abstraction
+that improves the quality of your program,
+
+22
+00:01:36.190 --> 00:01:40.120
+and the quality of life of
+the programmer significantly.
+
+23
+00:01:40.120 --> 00:01:45.830
+Okay, so, what kind of symbols
+do we have in Hack programs?
+
+24
+00:01:45.830 --> 00:01:50.790
+As it turns out,
+they fall into three distinct categories.
+
+25
+00:01:50.790 --> 00:01:53.670
+First of all, we have variable symbols.
+
+26
+00:01:53.670 --> 00:01:58.150
+Variable symbols represent memory
+locations where the programmer wants to
+
+27
+00:01:58.150 --> 00:02:04.450
+maintain some values that typically change
+in the course of executing the program.
+
+28
+00:02:04.450 --> 00:02:08.550
+Now, this sentence is a little bit
+misleading, because the programmer
+
+29
+00:02:08.550 --> 00:02:12.990
+doesn't care at all where these variables
+are actually located in memory.
+
+30
+00:02:12.990 --> 00:02:17.610
+You know, as far as the programmer is,
+cons, is concerned he or
+
+31
+00:02:17.610 --> 00:02:22.232
+she is going to say something like @sum,
+or @x,
+
+32
+00:02:22.232 --> 00:02:26.930
+or @y, and let the assembler worry about
+
+33
+00:02:26.930 --> 00:02:32.220
+where to store these or
+represent these variables in memory.
+
+34
+00:02:32.220 --> 00:02:34.650
+Once again,
+this is a very nice abstraction
+
+35
+00:02:34.650 --> 00:02:39.040
+that the assembler delivers
+to the practicing programmer.
+
+36
+00:02:39.040 --> 00:02:41.769
+So this is one kind of of
+symbols we have to worry about.
+
+37
+00:02:42.980 --> 00:02:47.240
+Another kind of symbols is
+label symbols that represent
+
+38
+00:02:47.240 --> 00:02:52.480
+destinations of goto command,
+commands in plural.
+
+39
+00:02:52.480 --> 00:02:57.260
+And in this example that we
+are facing here, we have three such
+
+40
+00:02:57.260 --> 00:03:02.670
+symbols LOOP, STOP, and END.
+
+41
+00:03:02.670 --> 00:03:07.460
+And finally, we may have all
+sorts of predefined symbols
+
+42
+00:03:07.460 --> 00:03:12.330
+like virtual registers, screen,
+keyboard, and so on and so forth.
+
+43
+00:03:12.330 --> 00:03:16.520
+And in the example that we have here,
+I think we have two,
+
+44
+00:03:16.520 --> 00:03:22.340
+we happen to have two predefined symbols,
+which are R0 and R1.
+
+45
+00:03:22.340 --> 00:03:24.830
+So, if you want to deal with symbols,
+
+46
+00:03:24.830 --> 00:03:29.030
+these are the three kinds of
+symbols that you have to handle.
+
+47
+00:03:29.030 --> 00:03:33.940
+So let me begin to describe what to do
+
+48
+00:03:33.940 --> 00:03:36.530
+with every one of these symbols,
+and we'll start from the end.
+
+49
+00:03:36.530 --> 00:03:40.250
+We'll start with predefined symbols.
+
+50
+00:03:40.250 --> 00:03:45.010
+So according to the Hack
+language specification,
+
+51
+00:03:45.010 --> 00:03:49.290
+the language features
+23 pre-defined symbols.
+
+52
+00:03:49.290 --> 00:03:51.950
+And here you see all of them.
+
+53
+00:03:53.220 --> 00:03:58.160
+And how do you translate such
+a symbol into binary code?
+
+54
+00:03:58.160 --> 00:04:02.600
+Well, first of all, we have to realize
+that these symbols come to play only
+
+55
+00:04:02.600 --> 00:04:05.310
+in the context of a instructions.
+
+56
+00:04:05.310 --> 00:04:08.700
+So the only play,
+place where you can see such a symbol
+
+57
+00:04:08.700 --> 00:04:13.890
+popping up in a program is
+an instruction like @preDefinedSymbol.
+
+58
+00:04:13.890 --> 00:04:17.210
+How do you translate this
+instruction into binary?
+
+59
+00:04:17.210 --> 00:04:22.050
+Well, you simply replace the predefined
+symbols with its corresponding value,
+
+60
+00:04:22.050 --> 00:04:23.830
+which is a decimal number.
+
+61
+00:04:23.830 --> 00:04:27.920
+And now the only thing that remains
+is to translate the at decimal number
+
+62
+00:04:27.920 --> 00:04:31.770
+into binary, and this is something that
+we discussed in the previous unit.
+
+63
+00:04:31.770 --> 00:04:36.210
+So, case closed,
+we know how to handle predefined values.
+
+64
+00:04:36.210 --> 00:04:38.830
+The next category of symbols
+that we have to deal with
+
+65
+00:04:38.830 --> 00:04:43.070
+are symbols that denote labels.
+
+66
+00:04:43.070 --> 00:04:48.970
+Now, label symbols are used
+to denote destinations in
+
+67
+00:04:48.970 --> 00:04:54.380
+the program that I may want to
+jump to using goto commands.
+
+68
+00:04:54.380 --> 00:05:00.160
+And they are declared very
+specifically using the pseudo-command,
+
+69
+00:05:00.160 --> 00:05:03.960
+round parentheses, and
+the name of the label in the middle.
+
+70
+00:05:03.960 --> 00:05:12.340
+I've used XXX to, to stand for this label,
+which can be any sequence of characters.
+
+71
+00:05:12.340 --> 00:05:16.740
+And these things are called
+pseudo-commands because
+
+72
+00:05:16.740 --> 00:05:19.150
+they don't generate any code.
+
+73
+00:05:19.150 --> 00:05:23.950
+When we translate the program into binary,
+we don't translate
+
+74
+00:05:23.950 --> 00:05:27.890
+the label declaration instructions, and
+that's why they're called pseudo-commands.
+
+75
+00:05:27.890 --> 00:05:31.980
+And we'll,
+we'll talk about this further later on.
+
+76
+00:05:31.980 --> 00:05:37.410
+So we declare label symbols using
+the agreed upon parentheses.
+
+77
+00:05:37.410 --> 00:05:39.860
+And you might ask yourself,
+why parentheses?
+
+78
+00:05:39.860 --> 00:05:43.040
+Why not label colon or
+something like this?
+
+79
+00:05:43.040 --> 00:05:48.080
+Well when Norm and I designed this
+language, we decided to use this
+
+80
+00:05:48.080 --> 00:05:53.378
+syntax once again, for
+reasons that will become clear later on.
+
+81
+00:05:53.378 --> 00:05:58.916
+Now once we declare a symbol
+using round parentheses,
+
+82
+00:05:58.916 --> 00:06:04.231
+the meaning of this declaration
+is that from now on,
+
+83
+00:06:04.231 --> 00:06:07.553
+whenever we see XXX in the program,
+
+84
+00:06:07.553 --> 00:06:13.091
+we mean to replace it with
+the address of the memory location
+
+85
+00:06:13.091 --> 00:06:18.004
+that contains the next
+instruction in the program.
+
+86
+00:06:18.004 --> 00:06:20.989
+Now, in order to make
+sense of what I just said,
+
+87
+00:06:20.989 --> 00:06:23.836
+I have to keep track of
+instruction numbers.
+
+88
+00:06:23.836 --> 00:06:28.322
+And that's what I do next, if you look
+at the left hand side of the slide,
+
+89
+00:06:28.322 --> 00:06:33.178
+you will see that I have marked or labeled
+every instruction in the program with
+
+90
+00:06:33.178 --> 00:06:36.480
+a running number that starts with zero.
+
+91
+00:06:36.480 --> 00:06:42.605
+And notice that I'm skipping empty lines,
+empty lines are white space, which is
+
+92
+00:06:43.667 --> 00:06:48.836
+tossed away, and also,
+I'm skipping the pseudo-instructions.
+
+93
+00:06:48.836 --> 00:06:53.168
+So, label declaration
+instructions like LOOP, STOP,
+
+94
+00:06:53.168 --> 00:06:57.500
+and END I've not counted, so to speak.
+
+95
+00:06:57.500 --> 00:07:02.097
+Now, once I have these line
+numbers in front of me, or
+
+96
+00:07:02.097 --> 00:07:05.775
+once I remember it somewhere in my memory,
+
+97
+00:07:05.775 --> 00:07:09.859
+now I see that I can relate
+LOOP to the number 4,
+
+98
+00:07:09.859 --> 00:07:14.378
+STOP to the number 18,
+and END to the number 22.
+
+99
+00:07:14.378 --> 00:07:16.948
+So I can basically generate
+this association and
+
+100
+00:07:16.948 --> 00:07:19.170
+keep it in the back of my mind.
+
+101
+00:07:19.170 --> 00:07:24.180
+So from now on,
+whenever I see an instruction like @LOOP,
+
+102
+00:07:24.180 --> 00:07:26.510
+we actually mean @4.
+
+103
+00:07:26.510 --> 00:07:30.860
+You know, we want to go to instruction
+number four, and so on and so forth for
+
+104
+00:07:30.860 --> 00:07:35.330
+the, for all the other label
+symbols in your program.
+
+105
+00:07:35.330 --> 00:07:40.250
+So how do you deal with
+an @labelSymbol instruction?
+
+106
+00:07:40.250 --> 00:07:44.796
+Well, all you have to do is look
+up the value of this instruction,
+
+107
+00:07:44.796 --> 00:07:48.763
+which you figured out before,
+as, as I just explained,
+
+108
+00:07:48.763 --> 00:07:51.923
+and replace it with the the symbol.
+
+109
+00:07:51.923 --> 00:07:57.378
+What remains is an @value instruction
+where value is a decimal number.
+
+110
+00:07:57.378 --> 00:08:00.190
+And, we know how to deal with this,
+
+111
+00:08:00.190 --> 00:08:03.980
+because we discussed it
+in the previous unit.
+
+112
+00:08:03.980 --> 00:08:08.810
+So, that's how you deal with
+symbols that represent labels.
+
+113
+00:08:08.810 --> 00:08:11.960
+The last category of symbols
+that we have to deal with
+
+114
+00:08:11.960 --> 00:08:15.160
+are symbols that represent variables.
+
+115
+00:08:15.160 --> 00:08:19.029
+Now, as you recall, when you wrote
+programs in the hex-symbolic language,
+
+116
+00:08:19.029 --> 00:08:19.622
+language.
+
+117
+00:08:19.622 --> 00:08:23.345
+We have this,
+fantastic ability to create and
+
+118
+00:08:23.345 --> 00:08:27.070
+use as many symbolic variables as we want.
+
+119
+00:08:27.070 --> 00:08:30.870
+This is one of the most important
+abstractions in programming.
+
+120
+00:08:30.870 --> 00:08:33.740
+And, someone has to pay the price,
+so to speak.
+
+121
+00:08:33.740 --> 00:08:36.705
+Someone has to implement this abstraction.
+
+122
+00:08:36.705 --> 00:08:38.750
+And as, as you can imagine,
+
+123
+00:08:38.750 --> 00:08:43.270
+the agent that implements this
+obstruction is the assembler.
+
+124
+00:08:43.270 --> 00:08:44.490
+How do we do it?
+
+125
+00:08:44.490 --> 00:08:49.550
+Well according to the Hack language
+specification, any symbol that appears
+
+126
+00:08:49.550 --> 00:08:54.550
+in the program which is not
+pre-defined and is not accompanied by
+
+127
+00:08:54.550 --> 00:09:00.800
+another label declaration statement
+is considered a variable.
+
+128
+00:09:00.800 --> 00:09:04.190
+We have two such variables in
+the example in front of us, and
+
+129
+00:09:04.190 --> 00:09:07.290
+they're called i and sum.
+
+130
+00:09:07.290 --> 00:09:12.154
+And the program, as you can see, begins
+with four lines of code that basically
+
+131
+00:09:12.154 --> 00:09:18.140
+declare and initialize these two, these
+two variables to 1 and 0, respectively.
+
+132
+00:09:18.140 --> 00:09:19.450
+It's not terribly interesting, but
+
+133
+00:09:19.450 --> 00:09:23.912
+I'm just trying to add some
+color to this discussion.
+
+134
+00:09:23.912 --> 00:09:28.535
+All right, so we know,
+how the programmer expresses variables,
+
+135
+00:09:28.535 --> 00:09:30.705
+in the way that I just described.
+
+136
+00:09:30.705 --> 00:09:34.020
+How do we handle these variables
+if we are the assembler?
+
+137
+00:09:34.020 --> 00:09:38.766
+Well, each such variable
+is assigned a unique
+
+138
+00:09:38.766 --> 00:09:42.788
+memory address, starting with 16.
+
+139
+00:09:42.788 --> 00:09:45.020
+You may ask yourself, why 16?
+
+140
+00:09:45.020 --> 00:09:50.060
+Well, this is a decision that Norm and
+I made when we,
+
+141
+00:09:50.060 --> 00:09:54.310
+developed this, language,
+and this, assembler.
+
+142
+00:09:54.310 --> 00:09:58.505
+And it's not exactly arbitrary decision,
+
+143
+00:09:58.505 --> 00:10:02.450
+as you will see later on, but for now you
+can treat it as an arbitrary decision.
+
+144
+00:10:02.450 --> 00:10:07.871
+So variables are assigned to
+memory from address 16 onward.
+
+145
+00:10:07.871 --> 00:10:08.891
+All right, so
+
+146
+00:10:08.891 --> 00:10:13.996
+with that in mind we have only two
+variables in this program, i and sum.
+
+147
+00:10:13.996 --> 00:10:19.530
+And the values of these variables
+are going to be 16 and 17.
+
+148
+00:10:19.530 --> 00:10:24.420
+Now, like any other symbol in
+a Hack program, the only context in
+
+149
+00:10:24.420 --> 00:10:29.720
+which such symbol can come to play is
+in the context of an A instruction.
+
+150
+00:10:29.720 --> 00:10:35.081
+So we, we may, we may see
+instructions like @variable name.
+
+151
+00:10:35.081 --> 00:10:36.704
+We definitely we see them,
+
+152
+00:10:36.704 --> 00:10:41.110
+will see them because otherwise why did
+we declare these variables to begin with.
+
+153
+00:10:41.110 --> 00:10:42.950
+We want to act on these variables and
+
+154
+00:10:42.950 --> 00:10:48.240
+we do it using A instructions
+followed by C instructions.
+
+155
+00:10:48.240 --> 00:10:52.750
+So, whenever we see such, such
+an instruction, how do we translate it?
+
+156
+00:10:52.750 --> 00:10:55.630
+Well, all you have to do is the following.
+
+157
+00:10:55.630 --> 00:10:58.590
+If you see this instruction for
+the first time in the program,
+
+158
+00:10:58.590 --> 00:11:02.030
+if this variable appears in
+the program for the first time,
+
+159
+00:11:02.030 --> 00:11:08.320
+then you allocate it to a memory address,
+starting from address 16 onward.
+
+160
+00:11:08.320 --> 00:11:12.520
+If you see this value popping
+up later in the program,
+
+161
+00:11:12.520 --> 00:11:17.240
+you simply look up the value that
+you assigned to it before, and
+
+162
+00:11:17.240 --> 00:11:22.520
+then what remains is
+an @decimal value instruction,
+
+163
+00:11:22.520 --> 00:11:25.510
+which we already know how to handle.
+
+164
+00:11:25.510 --> 00:11:29.090
+So this is how we handle symbols
+that represent variables.
+
+165
+00:11:30.490 --> 00:11:34.730
+Now, I think that you
+will agree with me that
+
+166
+00:11:34.730 --> 00:11:38.760
+handling all these different kinds
+of symbols is a major headache.
+
+167
+00:11:40.000 --> 00:11:45.270
+And what we can we possibly
+do to make this task simpler?
+
+168
+00:11:45.270 --> 00:11:47.310
+Well, exactly for this reason,
+
+169
+00:11:47.310 --> 00:11:52.900
+computer scientists have invented
+an artifact called symbol table.
+
+170
+00:11:52.900 --> 00:11:55.300
+The symbol table is a very simple and
+
+171
+00:11:55.300 --> 00:12:00.191
+powerful data structure that
+enables you to store and
+
+172
+00:12:00.191 --> 00:12:04.440
+use symbol value pairs, and
+
+173
+00:12:04.440 --> 00:12:10.880
+I can populate the table with as
+many symbol value pairs as I please.
+
+174
+00:12:10.880 --> 00:12:17.300
+So, when I write an assembler,
+I construct such an empty symbol table,
+
+175
+00:12:17.300 --> 00:12:22.460
+and then I begin to populate it with
+all the symbols that I encounter in,
+
+176
+00:12:22.460 --> 00:12:25.220
+in the program that I am
+supposed to translate.
+
+177
+00:12:25.220 --> 00:12:30.105
+And that's also how I'm going to
+explain to to you the structure and
+
+178
+00:12:30.105 --> 00:12:32.039
+the use of the symbol table.
+
+179
+00:12:32.039 --> 00:12:34.288
+I'm going to do it constructively.
+
+180
+00:12:34.288 --> 00:12:39.104
+I'm going to describe how we actually
+build the symbol table in order to deal
+
+181
+00:12:39.104 --> 00:12:41.460
+with the example that we see here.
+
+182
+00:12:41.460 --> 00:12:44.050
+And by the way, the same will hold for
+
+183
+00:12:44.050 --> 00:12:48.650
+any other Hack program that you will,
+that you will see in the future.
+
+184
+00:12:48.650 --> 00:12:50.770
+So how do you create this symbol table?
+
+185
+00:12:50.770 --> 00:12:55.746
+Well, the first thing that you do is you,
+you construct an empty symbol table.
+
+186
+00:12:55.746 --> 00:12:59.944
+And then you populate it with
+all the predefined symbols which
+
+187
+00:12:59.944 --> 00:13:02.590
+are specified in the language.
+
+188
+00:13:02.590 --> 00:13:07.570
+So in the case of the Hack assembly
+language we have 23 such pairs.
+
+189
+00:13:07.570 --> 00:13:12.110
+Simply add them up to
+the table one by one.
+
+190
+00:13:12.110 --> 00:13:16.590
+And you do this, by the way, before
+you even touch, the source program and
+
+191
+00:13:16.590 --> 00:13:18.790
+before you start any translation.
+
+192
+00:13:18.790 --> 00:13:21.170
+That's how you initialize
+the symbol table.
+
+193
+00:13:22.480 --> 00:13:23.580
+Now what do you do next?
+
+194
+00:13:23.580 --> 00:13:30.200
+The next thing that you do is
+you march through the entire
+
+195
+00:13:30.200 --> 00:13:35.860
+text file that constitutes
+your source assembly program.
+
+196
+00:13:35.860 --> 00:13:41.720
+And the only thing that you do is
+you look for label declarations.
+
+197
+00:13:41.720 --> 00:13:48.000
+Look for lines of code that
+begins with left parenthesis.
+
+198
+00:13:48.000 --> 00:13:52.340
+Once you have such line of code, you
+know that if the code was well written,
+
+199
+00:13:52.340 --> 00:13:57.530
+if it contains no error, it must be
+the beginning of a label declaration.
+
+200
+00:13:57.530 --> 00:14:04.160
+Now as you do this, you also keep track
+of how many lines you read so far.
+
+201
+00:14:04.160 --> 00:14:09.040
+And, as I explained previously,
+you count only real instructions,
+
+202
+00:14:09.040 --> 00:14:12.060
+skipping label declarations and
+white space.
+
+203
+00:14:13.070 --> 00:14:19.401
+So, once you do this, if you have this
+count in mind, when you encounter LOOP,
+
+204
+00:14:19.401 --> 00:14:24.330
+for example, you should know
+that LOOP corresponds to four.
+
+205
+00:14:24.330 --> 00:14:25.299
+And then you go on,
+
+206
+00:14:25.299 --> 00:14:30.310
+you ignore everything else until you hit
+the next label declaration which is STOP.
+
+207
+00:14:30.310 --> 00:14:32.660
+And then you consult your counter,
+
+208
+00:14:32.660 --> 00:14:37.130
+you see that stop corresponds to 18 and
+so on and, and so forth.
+
+209
+00:14:38.190 --> 00:14:44.663
+Based on this scanning, you can
+continue to build the symbol table.
+
+210
+00:14:44.663 --> 00:14:50.231
+And at the end of this process, you have
+added to the symbol table, all the symbols
+
+211
+00:14:50.231 --> 00:14:55.680
+that represent go to destinations
+in your program, label symbols.
+
+212
+00:14:55.680 --> 00:15:00.350
+Now, we call this process, first pass.
+
+213
+00:15:00.350 --> 00:15:03.260
+So, the assembler that
+we are going to develop,
+
+214
+00:15:03.260 --> 00:15:07.580
+is going to be a two
+pass assembly process.
+
+215
+00:15:07.580 --> 00:15:12.330
+In the first pass,
+we extract from the program
+
+216
+00:15:12.330 --> 00:15:17.030
+all the label symbols, and in the second
+pass, which I'm going to discuss next,
+
+217
+00:15:17.030 --> 00:15:20.010
+we're going to extract
+all the variable symbols.
+
+218
+00:15:20.010 --> 00:15:23.440
+So here's what we do in the next pass.
+
+219
+00:15:23.440 --> 00:15:28.660
+Once we finish the first pass,
+we start once again,
+
+220
+00:15:28.660 --> 00:15:32.810
+to scan the entire program
+from beginning to end.
+
+221
+00:15:32.810 --> 00:15:38.482
+And whenever we see a label, or
+I'm sorry, whenever we see a symbol
+
+222
+00:15:38.482 --> 00:15:44.670
+which does not appear in the symbol table,
+we know that it's a variable.
+
+223
+00:15:44.670 --> 00:15:49.513
+So, we add it to the table, and
+we assign to it the values 16, 17,
+
+224
+00:15:49.513 --> 00:15:54.628
+18, 19, and so on, for as many
+variables as you have in the program.
+
+225
+00:15:54.628 --> 00:15:58.992
+And when we encounter these
+variables later on in the program,
+
+226
+00:15:58.992 --> 00:16:01.970
+we always look them up
+in the symbol table.
+
+227
+00:16:01.970 --> 00:16:06.207
+If we find them in the symbol table,
+well, they are declared already and
+
+228
+00:16:06.207 --> 00:16:07.186
+we can use them.
+
+229
+00:16:07.186 --> 00:16:11.290
+If we don't find them, we can
+conclude that it's a new variable and
+
+230
+00:16:11.290 --> 00:16:13.525
+we simply add it to the symbol table.
+
+231
+00:16:13.525 --> 00:16:17.894
+That's the bates,
+the basic logic of constructing, and
+
+232
+00:16:17.894 --> 00:16:19.956
+utilizing a symbol table.
+
+233
+00:16:19.956 --> 00:16:21.419
+So how do you actually use it?
+
+234
+00:16:21.419 --> 00:16:27.480
+Well, to resolve to resolve a symbol, you
+look it up, you look it up in the table.
+
+235
+00:16:27.480 --> 00:16:32.680
+You extract the, or retrieve its value,
+put it into the instruction.
+
+236
+00:16:32.680 --> 00:16:37.700
+And what you get is the meaning of this
+symbol according to the symbol table.
+
+237
+00:16:38.730 --> 00:16:43.400
+Now before we go on, I'd like to
+emphasize that the symbol table
+
+238
+00:16:43.400 --> 00:16:47.700
+is some sort of an auxiliary data
+structure that the assembler
+
+239
+00:16:47.700 --> 00:16:51.880
+needs in order to carry out
+the translation process.
+
+240
+00:16:51.880 --> 00:16:55.900
+Once we finish the translation process,
+we can throw away the symbol table.
+
+241
+00:16:55.900 --> 00:16:57.790
+We don't need it anymore.
+
+242
+00:16:57.790 --> 00:17:03.370
+So, we maintain it as long as the
+assembler is processing the program and
+
+243
+00:17:03.370 --> 00:17:05.810
+then we can toss it away.
+
+244
+00:17:06.900 --> 00:17:07.490
+All right.
+
+245
+00:17:07.490 --> 00:17:15.430
+So, with that in mind we can now
+describe the overall assembly process.
+
+246
+00:17:15.430 --> 00:17:21.240
+We have reached to a point where we
+can actually lay out the algorithm
+
+247
+00:17:21.240 --> 00:17:27.040
+for according to which
+the assembler can be developed.
+
+248
+00:17:27.040 --> 00:17:28.620
+So, here we go.
+
+249
+00:17:28.620 --> 00:17:32.090
+First of all, we do some initialization.
+
+250
+00:17:32.090 --> 00:17:38.520
+We construct an empty symbol table and
+we get ready to process the input file,
+
+251
+00:17:38.520 --> 00:17:42.340
+we add the predefined symbols to
+the symbol table and then we go to work.
+
+252
+00:17:43.580 --> 00:17:50.670
+We do a first pass, we go through
+the entire input file and, we look up or,
+
+253
+00:17:50.670 --> 00:17:57.000
+or, we we s, we search for instructions
+that begin with the left parenthesis.
+
+254
+00:17:57.000 --> 00:18:04.780
+And we add the pairs, xxx, address
+to the symbol table as we go along.
+
+255
+00:18:04.780 --> 00:18:06.225
+Then we do a second pass.
+
+256
+00:18:06.225 --> 00:18:11.794
+In the second pass,
+we take care of the variable declarations,
+
+257
+00:18:11.794 --> 00:18:13.818
+as I explained earlier.
+
+258
+00:18:13.818 --> 00:18:18.624
+And at the same time, if we have
+an instruction which is a C-instruction,
+
+259
+00:18:18.624 --> 00:18:21.387
+we simply translate it into a binary code.
+
+260
+00:18:21.387 --> 00:18:28.042
+And if we have another instruction with
+deals with the variable that has been
+
+261
+00:18:28.042 --> 00:18:35.245
+used declared previously, we look up the
+table, we replace the values, and so on.
+
+262
+00:18:35.245 --> 00:18:39.230
+We take the binary call that we generated,
+
+263
+00:18:39.230 --> 00:18:42.770
+we write it into the output file,
+and that's it.
+
+264
+00:18:42.770 --> 00:18:49.310
+We we have completed translating
+the program from symbolic to binary.
+
+265
+00:18:49.310 --> 00:18:55.580
+Now, I have intentionally, I didn't
+read all the details of this algorithm.
+
+266
+00:18:55.580 --> 00:18:59.950
+Because I discussed them in various
+different ways in the previous units and
+
+267
+00:18:59.950 --> 00:19:01.150
+in this unit.
+
+268
+00:19:01.150 --> 00:19:06.200
+So you're welcome to stop the video,
+consult this algorithm and conc, and
+
+269
+00:19:06.200 --> 00:19:14.440
+convince yourself that it actually
+delivers the required translation task.
+
+270
+00:19:14.440 --> 00:19:19.030
+So if you do all this and
+if you actually implement
+
+271
+00:19:19.030 --> 00:19:23.910
+it in some programming language or on
+a piece of paper if you want or, you know,
+
+272
+00:19:23.910 --> 00:19:28.932
+you can teach a, a human being to
+be at an assembler if you want.
+
+273
+00:19:28.932 --> 00:19:34.794
+If you do all of the above,
+you have accomplished the the task
+
+274
+00:19:34.794 --> 00:19:41.810
+of actually translating hack
+symbolic code into hack binary code.
+
+275
+00:19:41.810 --> 00:19:46.150
+And that's the end of
+developing our assembler.
+
+276
+00:19:46.150 --> 00:19:50.310
+In the next units, we're going
+to talk about actually building
+
+277
+00:19:50.310 --> 00:19:55.220
+such an assembler using a programming
+language like Java or Python.
+
+278
+00:19:55.220 --> 00:19:57.467
+Or if you're not a programmer, or
+
+279
+00:19:57.467 --> 00:20:01.892
+if you don't have a previous knowledge
+of programming, we will also give you
+
+280
+00:20:01.892 --> 00:20:06.407
+an option to develop an assembler
+without using a programming language.
+
+281
+00:20:06.407 --> 00:20:10.749
+So stay tuned and we'll discuss
+this in the subsequent units.

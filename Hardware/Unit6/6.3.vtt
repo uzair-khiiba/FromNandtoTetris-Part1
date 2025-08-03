@@ -1,0 +1,716 @@
+WEBVTT
+
+1
+00:00:01.830 --> 00:00:06.380
+In this unit we're going to talk about
+the challenge of translating individual
+
+2
+00:00:06.380 --> 00:00:12.350
+statements or individual instructions
+from symbolic to binary code.
+
+3
+00:00:12.350 --> 00:00:17.100
+Now the general problem that we
+are facing is developing an assembler
+
+4
+00:00:17.100 --> 00:00:21.630
+that translates program from
+symbolic hack language,
+
+5
+00:00:21.630 --> 00:00:27.270
+into binary hack code and
+in order to write such an assembler
+
+6
+00:00:27.270 --> 00:00:33.140
+we have to know how to deal with white
+space, instructions and symbols.
+
+7
+00:00:33.140 --> 00:00:38.560
+Now in order to make our life easier we
+decided to defer the treatment of symbols
+
+8
+00:00:38.560 --> 00:00:45.620
+to a later stage and we also described
+previously how to handle white space.
+
+9
+00:00:45.620 --> 00:00:47.460
+Basically we're going
+to ignore white space.
+
+10
+00:00:47.460 --> 00:00:52.507
+So, what remains, is a program
+that contains instructions only,
+
+11
+00:00:52.507 --> 00:00:57.240
+A-instructions and
+C-instructions without symbols.
+
+12
+00:00:57.240 --> 00:01:01.760
+So, in order to write an assembler that
+can translate such a programming to binary
+
+13
+00:01:01.760 --> 00:01:06.310
+code we have to know how to translate
+A-instructions and C-instructions.
+
+14
+00:01:06.310 --> 00:01:09.100
+And that's exactly what
+we're going to discuss next.
+
+15
+00:01:09.100 --> 00:01:12.250
+So, let us begin with A-instructions.
+
+16
+00:01:12.250 --> 00:01:14.620
+Here's the general rule and
+
+17
+00:01:14.620 --> 00:01:20.690
+the syntax rule of how to put together
+an A-instruction and an example.
+
+18
+00:01:20.690 --> 00:01:26.430
+And here's the same,
+instruction expressed in the binary code.
+
+19
+00:01:26.430 --> 00:01:30.790
+Notice that,
+the opcode of an A-instruction is zero.
+
+20
+00:01:30.790 --> 00:01:38.650
+This is the first, red zero bit that you
+see, in the example at the bottom right.
+
+21
+00:01:38.650 --> 00:01:41.530
+By the way,
+the colors are completely meaningless,
+
+22
+00:01:41.530 --> 00:01:46.570
+and I used them only to
+improve our communications.
+
+23
+00:01:46.570 --> 00:01:49.400
+You know,
+once it gets into actually implementation,
+
+24
+00:01:50.510 --> 00:01:53.750
+the colors once again
+play no role whatsoever.
+
+25
+00:01:53.750 --> 00:01:59.980
+So how to translate from symbolic to
+binary when it comes to an A-instruction.
+
+26
+00:01:59.980 --> 00:02:00.940
+Well if you think about it,
+
+27
+00:02:00.940 --> 00:02:04.640
+the only challenge is to do
+something with this value.
+
+28
+00:02:04.640 --> 00:02:08.950
+So basically if the value
+is a decimal constant,
+
+29
+00:02:08.950 --> 00:02:16.230
+all we have to do is compute the binary
+representation of this value.
+
+30
+00:02:16.230 --> 00:02:20.859
+Add as many zeroes as we need in order
+to turn it into a 15 bit constant.
+
+31
+00:02:21.900 --> 00:02:28.060
+Ed or append, the zero opcode and,
+that's what we, and, and that's what is a,
+
+32
+00:02:28.060 --> 00:02:33.380
+a needed 16 bit, representation of this,
+of this instruction.
+
+33
+00:02:33.380 --> 00:02:37.570
+So it's not a big deal, but
+obviously we have to do it.
+
+34
+00:02:38.870 --> 00:02:40.730
+What if, value's a symbol?
+
+35
+00:02:40.730 --> 00:02:45.130
+Well, I just want to, remind you,
+what what we said earlier.
+
+36
+00:02:45.130 --> 00:02:48.360
+We're going to,
+deal with symbols later on.
+
+37
+00:02:48.360 --> 00:02:53.820
+So, translating instructions is, is
+
+38
+00:02:53.820 --> 00:02:59.130
+something that's not terribly complicated,
+but once again it takes, some programming.
+
+39
+00:02:59.130 --> 00:03:01.277
+All right, what about C-instructions.
+
+40
+00:03:01.277 --> 00:03:05.950
+Well, C-instructions also have a symbolic
+
+41
+00:03:05.950 --> 00:03:08.930
+manifestation and and
+a binary manifestation.
+
+42
+00:03:08.930 --> 00:03:15.810
+And there's a set of tables, so to speak,
+that describe the mapping from.
+
+43
+00:03:15.810 --> 00:03:20.790
+Symbolic pneumonics into
+their binary representations.
+
+44
+00:03:20.790 --> 00:03:25.980
+So these are the rules of the game when
+it comes to translating C-instructions.
+
+45
+00:03:25.980 --> 00:03:27.750
+So how do you actually do it?
+
+46
+00:03:27.750 --> 00:03:32.520
+I think the easier way to to describe
+the translation process is to
+
+47
+00:03:32.520 --> 00:03:34.840
+do it using an example.
+
+48
+00:03:34.840 --> 00:03:39.414
+So suppose we're giving this single
+
+49
+00:03:39.414 --> 00:03:45.100
+C-instruction and we have to
+translate that into binary code.
+
+50
+00:03:45.100 --> 00:03:50.060
+Well, before we go on I want to
+remind you that every C-instruction
+
+51
+00:03:50.060 --> 00:03:52.690
+consists of three fields.
+
+52
+00:03:52.690 --> 00:03:55.018
+So, in the example that we have here.
+
+53
+00:03:55.018 --> 00:04:00.556
+The MD pneumonic is
+the destination field or
+
+54
+00:04:00.556 --> 00:04:07.560
+the value of the destination field
+in this particular instruction.
+
+55
+00:04:07.560 --> 00:04:12.350
+Then comes D plus 1,
+which is the value of the comp or
+
+56
+00:04:12.350 --> 00:04:15.320
+computational, computation field.
+
+57
+00:04:15.320 --> 00:04:18.330
+And we also have a jump field
+which happens to be null.
+
+58
+00:04:18.330 --> 00:04:24.380
+You know, we don't have a jump
+instruction here so the jump is a null.
+
+59
+00:04:24.380 --> 00:04:29.420
+So implicit in what I'm saying
+is the assumption that we can
+
+60
+00:04:29.420 --> 00:04:35.990
+somehow take this source instruction and
+decompose it into these three fields.
+
+61
+00:04:35.990 --> 00:04:40.890
+And indeed this is something that is going
+to be done by an element of our assembler
+
+62
+00:04:40.890 --> 00:04:42.280
+called parser.
+
+63
+00:04:42.280 --> 00:04:46.790
+The parser is going to
+take a source statement or
+
+64
+00:04:46.790 --> 00:04:53.100
+instruction written in symbolic code and
+chop it into three individual,
+
+65
+00:04:53.100 --> 00:04:57.890
+individual fields, and then we can inspect
+every one of these fields in isolation.
+
+66
+00:04:57.890 --> 00:05:01.510
+And act on it, and
+that's exactly what I'm going to do next.
+
+67
+00:05:01.510 --> 00:05:08.620
+So, let us begin to,
+put together the string of characters
+
+68
+00:05:08.620 --> 00:05:14.540
+that will end up representing the binary
+code of MD equals D plus one.
+
+69
+00:05:14.540 --> 00:05:17.389
+We can do it in, in many different ways,
+and here is one of them.
+
+70
+00:05:19.020 --> 00:05:23.810
+Focusing on the target expression
+
+71
+00:05:23.810 --> 00:05:28.500
+we see that every C-instruction
+begins with three ones.
+
+72
+00:05:28.500 --> 00:05:32.610
+When it comes to to the binary
+flavor of C-instructions, so
+
+73
+00:05:32.610 --> 00:05:35.440
+we initialize the string
+that we are building.
+
+74
+00:05:35.440 --> 00:05:36.600
+With three ones.
+
+75
+00:05:36.600 --> 00:05:39.470
+That's, that's what we
+do when we get started.
+
+76
+00:05:39.470 --> 00:05:47.530
+Next we focus, if we want, we focus on the
+next seven bits that we have to create.
+
+77
+00:05:47.530 --> 00:05:51.500
+And these seven bits
+correspond to the comp field.
+
+78
+00:05:51.500 --> 00:05:54.840
+Now, the comp field
+happens to be D plus one.
+
+79
+00:05:54.840 --> 00:05:59.120
+Once again, I assume that I have access
+to this, field, I can easily retrieve it.
+
+80
+00:05:59.120 --> 00:06:01.450
+I see that it's D plus one.
+
+81
+00:06:01.450 --> 00:06:06.440
+And if it's D plus one I can look
+it up in the relevant table.
+
+82
+00:06:06.440 --> 00:06:10.810
+I look up this pneumonic, and
+I see that it corresponds to, an a bit,
+
+83
+00:06:10.810 --> 00:06:16.650
+which is zero, and to six control
+bits which are zero and five ones.
+
+84
+00:06:16.650 --> 00:06:20.780
+So putting these bits together I generate
+
+85
+00:06:20.780 --> 00:06:25.170
+the seven bit value zero
+zero one one one one one and
+
+86
+00:06:25.170 --> 00:06:31.090
+I append it to the string
+that I gradually build here.
+
+87
+00:06:31.090 --> 00:06:32.180
+Alrl ight.
+
+88
+00:06:32.180 --> 00:06:35.940
+The next thing to do is focus on
+
+89
+00:06:35.940 --> 00:06:40.650
+the next part of the instruction
+which corresponds to the destination.
+
+90
+00:06:40.650 --> 00:06:44.350
+So, I look up the value
+of my destination field.
+
+91
+00:06:44.350 --> 00:06:45.520
+It happens to be MD.
+
+92
+00:06:46.610 --> 00:06:50.230
+I consult the relevant, table.
+
+93
+00:06:50.230 --> 00:06:54.360
+And I see that the MD
+pneumonic corresponds to 011.
+
+94
+00:06:54.360 --> 00:07:00.600
+I take this 011 value, I append it to
+this string that I gradually built,
+
+95
+00:07:00.600 --> 00:07:09.410
+and I've completed the the synthesis
+of these two fields together.
+
+96
+00:07:09.410 --> 00:07:14.780
+Moving along the remaining three bits
+correspond to the jump directive.
+
+97
+00:07:14.780 --> 00:07:18.660
+I look up the value of the jump
+directive in my source instruction.
+
+98
+00:07:18.660 --> 00:07:20.700
+I see that it's null.
+
+99
+00:07:20.700 --> 00:07:23.290
+I look up null in the relevant table and
+
+100
+00:07:23.290 --> 00:07:27.450
+I see that it corresponds to
+the three bits zero, zero, zero.
+
+101
+00:07:27.450 --> 00:07:32.350
+I take these bits, append them to
+the end of the string and voila,
+
+102
+00:07:32.350 --> 00:07:39.180
+we have managed to translate the symbolic
+instruction into its binary equivalent.
+
+103
+00:07:40.320 --> 00:07:46.020
+As you see, everything that they
+do here is text processing,
+
+104
+00:07:46.020 --> 00:07:49.930
+and in, in some languages it
+is called string processing,
+
+105
+00:07:49.930 --> 00:07:54.620
+I have a source string which
+I analyze in some way and,
+
+106
+00:07:54.620 --> 00:08:01.000
+I have a target string which I build,
+you know, in some gradual process.
+
+107
+00:08:01.000 --> 00:08:05.750
+And, every high level language
+has the capability to
+
+108
+00:08:05.750 --> 00:08:07.960
+to do such as string processing.
+
+109
+00:08:07.960 --> 00:08:12.260
+And, that's exactly what you'll do
+when you actually write the assembler.
+
+110
+00:08:12.260 --> 00:08:16.640
+Now, when we say that we
+generate binary code.
+
+111
+00:08:16.640 --> 00:08:20.640
+There may be some misunderstanding here so
+let me clarify it.
+
+112
+00:08:20.640 --> 00:08:25.990
+We basically generate a text
+file that contains of
+
+113
+00:08:27.040 --> 00:08:32.000
+that which is, which consists of two
+characters only zero and one but
+
+114
+00:08:32.000 --> 00:08:36.170
+they are treated as characters as SD or
+Unicode characters.
+
+115
+00:08:36.170 --> 00:08:40.580
+So we have this text file that we write
+which consists of zeros and ones only.
+
+116
+00:08:40.580 --> 00:08:44.680
+And later on we're going to load
+this text file into the computer.
+
+117
+00:08:44.680 --> 00:08:50.820
+And once we load it into the computer it
+becomes real zeros and ones so to speak.
+
+118
+00:08:50.820 --> 00:08:53.370
+All right so this basically concludes.
+
+119
+00:08:53.370 --> 00:08:56.900
+The translation of C-instructions.
+
+120
+00:08:56.900 --> 00:09:01.150
+So with that in mind,
+here is the overall assembly logic.
+
+121
+00:09:01.150 --> 00:09:06.620
+We are given a text file, and this text
+file contains all sorts of characters
+
+122
+00:09:06.620 --> 00:09:12.220
+that hopefully represent a Hack
+program written in symbolic Hack code.
+
+123
+00:09:13.400 --> 00:09:15.730
+So, how do we translate it into binary?
+
+124
+00:09:15.730 --> 00:09:19.050
+Well, we process this file.
+
+125
+00:09:19.050 --> 00:09:23.330
+And, we begin marching through it.
+
+126
+00:09:23.330 --> 00:09:25.140
+And for each instruction, or for
+
+127
+00:09:25.140 --> 00:09:30.350
+each line in this file,
+we first of all parse the instruction.
+
+128
+00:09:30.350 --> 00:09:33.640
+We break it into its underlying fields.
+
+129
+00:09:33.640 --> 00:09:39.450
+So if we have an A-instruction
+we have the at sign and a value.
+
+130
+00:09:39.450 --> 00:09:44.670
+We take this value and
+we re-express it in binary code.
+
+131
+00:09:44.670 --> 00:09:50.085
+If it's a C-instruction we split
+the instruction into its three
+
+132
+00:09:51.225 --> 00:09:56.165
+fields comp, desk, and
+and jump, and also for
+
+133
+00:09:56.165 --> 00:10:01.580
+every one of these fields we generate the,
+corresponding
+
+134
+00:10:01.580 --> 00:10:07.660
+binary binary bits, and
+then we assemble all these codes that we,
+
+135
+00:10:07.660 --> 00:10:11.840
+created into a single 16 bit instruction.
+
+136
+00:10:11.840 --> 00:10:15.980
+And we write this instruction
+to an output file.
+
+137
+00:10:15.980 --> 00:10:18.150
+Which is not seen here in the picture.
+
+138
+00:10:18.150 --> 00:10:21.970
+But, the assembler creates this
+empty file at the beginning.
+
+139
+00:10:21.970 --> 00:10:26.490
+And begins to populate it with, lines.
+
+140
+00:10:26.490 --> 00:10:33.010
+Each line being a sequence of, or
+a string of 16 zeros and ones.
+
+141
+00:10:33.010 --> 00:10:37.720
+So this is the overall process
+of translating a Hack program.
+
+142
+00:10:37.720 --> 00:10:42.060
+A program that consists of only A and
+C-instructions without symbols.
+
+143
+00:10:43.810 --> 00:10:49.190
+If you do all this,
+then you will manage to create
+
+144
+00:10:49.190 --> 00:10:53.620
+an assembler that can translate
+programs into binary code and
+
+145
+00:10:53.620 --> 00:10:59.820
+everything looks very nice indeed,
+and I'd hate to be,
+
+146
+00:10:59.820 --> 00:11:05.440
+a party spoiler, but there's a big
+gap that we haven't closed yet,
+
+147
+00:11:05.440 --> 00:11:10.350
+and this is the fact that the source
+code contains no symbols.
+
+148
+00:11:10.350 --> 00:11:18.010
+We have managed to to design an assembler
+that translates a symbol-less programs,
+
+149
+00:11:18.010 --> 00:11:22.610
+but we still have to close this
+gap of dealing with symbols, and
+
+150
+00:11:22.610 --> 00:11:26.130
+that's exactly what we're
+going to do in the next unit.

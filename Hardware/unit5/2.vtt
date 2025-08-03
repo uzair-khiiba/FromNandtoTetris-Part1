@@ -1,0 +1,684 @@
+WEBVTT
+
+1
+00:00:01.470 --> 00:00:05.590
+In this unit, we're going to talk about
+the very basic thing that a computer does,
+
+2
+00:00:05.590 --> 00:00:08.970
+which is execute one
+instruction after the other.
+
+3
+00:00:08.970 --> 00:00:11.910
+We're going to look more specifically
+at how exactly is that done.
+
+4
+00:00:13.000 --> 00:00:14.720
+Well, really, it's very simple.
+
+5
+00:00:14.720 --> 00:00:18.790
+You first fetch the instruction
+that you need to execute, and
+
+6
+00:00:18.790 --> 00:00:19.680
+then you just execute it.
+
+7
+00:00:20.790 --> 00:00:22.620
+And then you repeat.
+
+8
+00:00:22.620 --> 00:00:25.040
+And that's the only thing that a CPU does.
+
+9
+00:00:25.040 --> 00:00:28.960
+Fetch an instruction, execute it, fetch
+another instruction, execute it, and so
+
+10
+00:00:28.960 --> 00:00:30.390
+on and so forth.
+
+11
+00:00:30.390 --> 00:00:34.760
+So let us look specifically at each of
+these two stages, what it exactly happens
+
+12
+00:00:34.760 --> 00:00:39.080
+there and how does that translate
+into what happens in hardware.
+
+13
+00:00:39.080 --> 00:00:41.140
+So let's first talk about fetching.
+
+14
+00:00:41.140 --> 00:00:44.890
+So, how do you get the neck,
+next instruction that you need to execute.
+
+15
+00:00:44.890 --> 00:00:47.110
+Well, where is the next
+instruction located at?
+
+16
+00:00:47.110 --> 00:00:49.490
+It's in the program memory,
+it's in the memory.
+
+17
+00:00:49.490 --> 00:00:50.680
+Where in the memory?
+
+18
+00:00:50.680 --> 00:00:54.800
+In the address that's specified
+by our program counter, probably.
+
+19
+00:00:54.800 --> 00:00:58.550
+So, we need to basically put
+the location of the next instruction,
+
+20
+00:00:58.550 --> 00:01:01.220
+of the instruction that
+you want to execute next,
+
+21
+00:01:01.220 --> 00:01:05.510
+into the address of the program memory.
+
+22
+00:01:05.510 --> 00:01:09.430
+And then we need to read
+the contents of that memory and
+
+23
+00:01:09.430 --> 00:01:12.180
+then we will get the basic
+instructions that we need to execute,
+
+24
+00:01:12.180 --> 00:01:14.000
+the code of the instructions
+that we need to execute.
+
+25
+00:01:15.690 --> 00:01:19.320
+The next instruction will
+usually just be the one after
+
+26
+00:01:19.320 --> 00:01:21.340
+the one that we just did in the previous.
+
+27
+00:01:21.340 --> 00:01:24.370
+That is if we now finished
+instruction number eight,
+
+28
+00:01:24.370 --> 00:01:27.530
+usually the next instruction
+will be instruction number nine.
+
+29
+00:01:27.530 --> 00:01:30.729
+Sometimes we already know that we jump and
+we're going to need,
+
+30
+00:01:30.729 --> 00:01:33.780
+want to execute the different instruction.
+
+31
+00:01:33.780 --> 00:01:38.690
+So how do we actually go about putting
+the address of the next instruction
+
+32
+00:01:38.690 --> 00:01:41.730
+into the address input
+of the program memory?
+
+33
+00:01:41.730 --> 00:01:45.220
+Well, we're going to have to put it
+somewhere and that's going to be into some
+
+34
+00:01:45.220 --> 00:01:49.710
+counter, into some register and that
+is usually called the program counter.
+
+35
+00:01:49.710 --> 00:01:53.820
+So basically the hard words of exec,
+executes the fetch,
+
+36
+00:01:53.820 --> 00:01:59.240
+if you wish, part of the cycle is
+the following, there is a program counter,
+
+37
+00:01:59.240 --> 00:02:03.130
+when we need to jump into a new location
+or we need to just increase and
+
+38
+00:02:03.130 --> 00:02:06.700
+go to the next instruction, we need
+to manipulate the program counter so
+
+39
+00:02:06.700 --> 00:02:09.740
+it will have the address
+of the next instruction.
+
+40
+00:02:09.740 --> 00:02:13.570
+The output of the program counter
+feeds into the address specification
+
+41
+00:02:13.570 --> 00:02:15.130
+of our program memory.
+
+42
+00:02:15.130 --> 00:02:18.450
+And then,
+out of the program memories output
+
+43
+00:02:18.450 --> 00:02:22.190
+comes the actual code of instructions
+that we need to execute.
+
+44
+00:02:22.190 --> 00:02:27.410
+So that is basically what happens in the
+fetch part of the fetch and execute cycle.
+
+45
+00:02:27.410 --> 00:02:32.750
+So now, once we have the code of the
+instruction, now we need to execute it.
+
+46
+00:02:32.750 --> 00:02:37.640
+So the instruction code itself has all the
+specifics of what we're going to do now.
+
+47
+00:02:37.640 --> 00:02:40.460
+Which a,
+calculations that we're supposed to do.
+
+48
+00:02:40.460 --> 00:02:43.810
+Are we touching this register or
+that register and so on.
+
+49
+00:02:43.810 --> 00:02:47.530
+And whether we want to,
+need to jump afterwards and so on.
+
+50
+00:02:47.530 --> 00:02:52.040
+So usually all that information is coded
+somehow inside the instructions that
+
+51
+00:02:52.040 --> 00:02:55.270
+we already have because that we
+got it in the instruction part
+
+52
+00:02:55.270 --> 00:02:57.810
+in the fetch part of the cycle.
+
+53
+00:02:57.810 --> 00:03:01.108
+And usually the way it's
+coded is in a simple way.
+
+54
+00:03:01.108 --> 00:03:04.980
+So that is basically,
+different parts of the instruction,
+
+55
+00:03:04.980 --> 00:03:09.090
+bits, actually control the different
+parts that we need to do right now.
+
+56
+00:03:09.090 --> 00:03:13.930
+Sometimes it's more complicated, sometimes
+it's more simple but that's a basic idea.
+
+57
+00:03:13.930 --> 00:03:18.070
+So the basic execution executing
+the current instruction basically mean
+
+58
+00:03:18.070 --> 00:03:22.120
+taking the bits from the instruction
+code that specifies what to do, and
+
+59
+00:03:22.120 --> 00:03:25.200
+actually doing what needs to be done.
+
+60
+00:03:25.200 --> 00:03:26.950
+Looking at it in the hardware phase,
+
+61
+00:03:26.950 --> 00:03:31.390
+from the hardware point of view, the
+instruction we already got from our fetch,
+
+62
+00:03:31.390 --> 00:03:37.540
+that is now going to feed into the control
+bus of our CPU, of our computer.
+
+63
+00:03:37.540 --> 00:03:40.490
+And that control bus,
+basically controls everything.
+
+64
+00:03:40.490 --> 00:03:43.760
+It tell the ALU what instruction
+to compute, to add numbers,
+
+65
+00:03:43.760 --> 00:03:44.850
+subtract them, or so on.
+
+66
+00:03:45.930 --> 00:03:49.490
+It also tells where do the,
+data pieces come from.
+
+67
+00:03:49.490 --> 00:03:54.160
+Do they come from which which register or
+from the data memory or so on.
+
+68
+00:03:54.160 --> 00:03:58.700
+So we basically have the instruction
+memory that we just fetched, basically
+
+69
+00:03:58.700 --> 00:04:03.980
+tells us exactly each part of the system
+what to do right now in the execute cycle.
+
+70
+00:04:03.980 --> 00:04:08.190
+And that really controls whether
+we read from the data memory,
+
+71
+00:04:08.190 --> 00:04:13.180
+whether we read from the registers, what
+do we compute, where to write and so on?
+
+72
+00:04:13.180 --> 00:04:14.660
+Of course there are many details.
+
+73
+00:04:14.660 --> 00:04:16.460
+How is that exactly done?
+
+74
+00:04:16.460 --> 00:04:19.380
+How do we, how does the bytes from
+the instructions specifically
+
+75
+00:04:19.380 --> 00:04:23.420
+tell the ALU what to do which
+registers to choose and so on?
+
+76
+00:04:23.420 --> 00:04:27.730
+That is best a, viewed through
+the lens of a particular computer.
+
+77
+00:04:27.730 --> 00:04:30.630
+Specifically we will actually
+get into these details
+
+78
+00:04:30.630 --> 00:04:33.600
+when we talk about our computer,
+about the HACK computer.
+
+79
+00:04:33.600 --> 00:04:37.060
+And that is what we are going to do,
+be doing the next few units
+
+80
+00:04:37.060 --> 00:04:41.250
+where you're actually going to see
+how we actually control each and
+
+81
+00:04:41.250 --> 00:04:44.530
+every part of the system
+from the instruction bits.
+
+82
+00:04:44.530 --> 00:04:48.200
+So, we're not going to delve deeper
+into the specifics of this part,
+
+83
+00:04:48.200 --> 00:04:52.870
+which is really the most, more, most of
+the work that is done and by the computer.
+
+84
+00:04:52.870 --> 00:04:57.290
+But rather, I want to take a step
+backwards and look at a certain problem
+
+85
+00:04:57.290 --> 00:05:00.930
+that I've sort of glossed over so
+far, and that is the fact
+
+86
+00:05:00.930 --> 00:05:05.150
+that we really have a clash between
+the fetch cycle and the execute cycle.
+
+87
+00:05:05.150 --> 00:05:07.939
+You see, both the program and
+the data reside in memory.
+
+88
+00:05:09.060 --> 00:05:12.950
+In the fetch cycle, basically we
+need to get from the program memory,
+
+89
+00:05:12.950 --> 00:05:14.100
+the next instruction.
+
+90
+00:05:14.100 --> 00:05:16.960
+So we need to put into
+the address of the memory,
+
+91
+00:05:16.960 --> 00:05:20.230
+the address of the next instruction and
+get the instructions output.
+
+92
+00:05:20.230 --> 00:05:23.230
+On the other hand, in the execute cycle,
+
+93
+00:05:23.230 --> 00:05:26.070
+we need to access data that
+also resides in memory.
+
+94
+00:05:26.070 --> 00:05:28.820
+So we need to put into
+the address of the memory,
+
+95
+00:05:28.820 --> 00:05:31.570
+the address of the data piece
+that we want to operate on,
+
+96
+00:05:31.570 --> 00:05:35.480
+which has nothing to do with the program
+piece that gave us the instruction.
+
+97
+00:05:35.480 --> 00:05:38.050
+And because we have a single memory,
+that is a clash,
+
+98
+00:05:38.050 --> 00:05:41.300
+because what are we going to put into
+the address, are we going to put there,
+
+99
+00:05:41.300 --> 00:05:45.140
+the pro, the address of the instruction,
+or is address of the data piece?
+
+100
+00:05:45.140 --> 00:05:47.740
+We need to do both and that's a problem.
+
+101
+00:05:47.740 --> 00:05:48.780
+So how do we solve that?
+
+102
+00:05:50.080 --> 00:05:53.710
+Well, basically we are going to do one
+after the other, that is the usual way.
+
+103
+00:05:53.710 --> 00:05:54.990
+How do we do one after the other?
+
+104
+00:05:54.990 --> 00:05:59.640
+There's going to be a multiplexer that
+feeds into the address of the memory.
+
+105
+00:05:59.640 --> 00:06:03.770
+In the first part of the cycle in the
+fetch cycle, we're going to actually set
+
+106
+00:06:03.770 --> 00:06:07.231
+the multiplexer to plug into
+the address input of the memory,
+
+107
+00:06:07.231 --> 00:06:11.770
+the program counter that is
+the location of the next instruction.
+
+108
+00:06:11.770 --> 00:06:15.830
+While in the execute cycle,
+the multiplexer will actually set
+
+109
+00:06:15.830 --> 00:06:20.230
+the memory to actually point into
+the data address that we need to access.
+
+110
+00:06:20.230 --> 00:06:23.950
+And of course, the output of
+the memory will go into both places.
+
+111
+00:06:23.950 --> 00:06:28.343
+Both into the, the bit part of this
+system that needs instruction and
+
+112
+00:06:28.343 --> 00:06:33.266
+into the part of the system that are used
+inside when executing to actually put
+
+113
+00:06:33.266 --> 00:06:34.647
+information there.
+
+114
+00:06:34.647 --> 00:06:39.650
+A, you may wonder, okay, so
+how do we do both of them together?
+
+115
+00:06:39.650 --> 00:06:42.330
+Well, when you look at it
+you really need to remember
+
+116
+00:06:42.330 --> 00:06:45.830
+the instruction from the fetch cycle
+to used for the execution cycle.
+
+117
+00:06:47.090 --> 00:06:48.940
+So that is what we're going to do.
+
+118
+00:06:48.940 --> 00:06:52.560
+When we actually a,
+are in the fetch cycle,
+
+119
+00:06:52.560 --> 00:06:56.170
+we put the address of the next
+instruction, we get the next instruction,
+
+120
+00:06:56.170 --> 00:07:00.390
+and then we need to remember it
+inside an instruction register.
+
+121
+00:07:00.390 --> 00:07:04.370
+And that instruction register
+is exactly what is remains
+
+122
+00:07:04.370 --> 00:07:09.920
+holding the value of the instruction that
+we're now executing in the execute cycle.
+
+123
+00:07:09.920 --> 00:07:14.174
+And then of course, in the execute cycle
+now we have the instruction already stored
+
+124
+00:07:14.174 --> 00:07:15.162
+in this register.
+
+125
+00:07:15.162 --> 00:07:20.044
+And we can work with all the information
+that we need a, for the execute cycle
+
+126
+00:07:20.044 --> 00:07:25.800
+using the data memory that is being
+addressed in the second part of the cycle.
+
+127
+00:07:25.800 --> 00:07:28.320
+So, this is the usual way it's done.
+
+128
+00:07:28.320 --> 00:07:29.850
+Now there is a shortcut and
+
+129
+00:07:29.850 --> 00:07:33.280
+that is simply keep the two different
+parts of the memory separate.
+
+130
+00:07:33.280 --> 00:07:36.660
+That is,
+have one unit holding the data memory and
+
+131
+00:07:36.660 --> 00:07:39.140
+another unit holding the program memory.
+
+132
+00:07:39.140 --> 00:07:42.220
+Each one of these units
+has its own address.
+
+133
+00:07:42.220 --> 00:07:44.600
+And then we don't need to worry about,
+a, be,
+
+134
+00:07:44.600 --> 00:07:48.360
+between switching between them,
+a, as we've just shown.
+
+135
+00:07:48.360 --> 00:07:51.290
+Eh, this shortcut makes everything simple.
+
+136
+00:07:51.290 --> 00:07:54.490
+It is sometimes called the Harvard
+architecture, but we just view it as
+
+137
+00:07:54.490 --> 00:07:59.010
+a variant of the von Neumann Architecture
+and keep using it due to its simplicity.
+
+138
+00:07:59.010 --> 00:08:03.050
+So, now we've basically finished
+talking about the general a,
+
+139
+00:08:03.050 --> 00:08:05.270
+architecture of computers.
+
+140
+00:08:05.270 --> 00:08:09.120
+How in general do you actually a,
+construct a computer?
+
+141
+00:08:09.120 --> 00:08:12.820
+What we're going to switch in
+the next unit is talking specifically
+
+142
+00:08:12.820 --> 00:08:14.540
+about our HACK computer.
+
+143
+00:08:14.540 --> 00:08:16.490
+And how it is built a, exactly.

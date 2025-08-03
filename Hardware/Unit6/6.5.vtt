@@ -1,0 +1,1104 @@
+WEBVTT
+
+1
+00:00:04.720 --> 00:00:08.908
+In this unit,
+we're going to describe arc, a proposed,
+
+2
+00:00:08.908 --> 00:00:12.090
+a architecture for an assembler.
+
+3
+00:00:12.090 --> 00:00:14.040
+You've already seen the basic algorithm,
+
+4
+00:00:14.040 --> 00:00:16.960
+the basic logic of what
+an assembler needs to do, but
+
+5
+00:00:16.960 --> 00:00:21.740
+now we need to translate that into a real
+program and think about its architecture.
+
+6
+00:00:21.740 --> 00:00:25.010
+Now the truth is an assembler
+is a pretty simple program.
+
+7
+00:00:25.010 --> 00:00:29.440
+And those of you who've already had
+significant programming experience can
+
+8
+00:00:29.440 --> 00:00:35.180
+probably ignore this unit very safely and
+just go ahead and write the assembler.
+
+9
+00:00:35.180 --> 00:00:38.840
+For those of you that has likely
+less experienced programming,
+
+10
+00:00:38.840 --> 00:00:43.560
+you may want to look and remember our
+suggestions for reasonable architecture,
+
+11
+00:00:43.560 --> 00:00:45.760
+reasonable components of an assembler.
+
+12
+00:00:45.760 --> 00:00:50.620
+Again, this is only a recommendation, you
+may want to look at the recommendation and
+
+13
+00:00:50.620 --> 00:00:52.670
+then do whatever you feel
+most comfortable with.
+
+14
+00:00:54.430 --> 00:00:59.680
+So let us see what is the types of modules
+that probably will be useful when you
+
+15
+00:00:59.680 --> 00:01:03.580
+write an assembler, the type of operations
+that need, certainly need to be done.
+
+16
+00:01:03.580 --> 00:01:07.800
+Well, three of them can be very easily
+identified, so let's talk about them.
+
+17
+00:01:07.800 --> 00:01:12.750
+One of them is basically the parser,
+something that is able to read a file and
+
+18
+00:01:12.750 --> 00:01:16.520
+get the different commands in it,
+and breaks them into parts.
+
+19
+00:01:16.520 --> 00:01:17.780
+That's the first part reading and
+
+20
+00:01:17.780 --> 00:01:21.640
+parsing command, you will need to do that,
+that's one thing.
+
+21
+00:01:21.640 --> 00:01:26.490
+Another a, part of the code probably
+will have to actually understand
+
+22
+00:01:26.490 --> 00:01:31.080
+how you convert a mnemonic,
+an assembly language command or
+
+23
+00:01:31.080 --> 00:01:34.850
+part of an assembly language
+command into actual code.
+
+24
+00:01:34.850 --> 00:01:38.108
+So that we'll have to understand
+the mapping and that's a different another
+
+25
+00:01:38.108 --> 00:01:41.331
+part that we'll need to be done somewhere
+probably in your, an assembler.
+
+26
+00:01:42.650 --> 00:01:46.630
+And of course, there's another part that
+we'll need to be able to handle symbols,
+
+27
+00:01:46.630 --> 00:01:48.140
+the symbol table itself.
+
+28
+00:01:48.140 --> 00:01:51.560
+So let's talk a bit about these
+three different components and
+
+29
+00:01:51.560 --> 00:01:54.980
+once we talk about them,
+you'll see that the rest of the program
+
+30
+00:01:54.980 --> 00:01:58.890
+using these different components,
+which we think about as classes.
+
+31
+00:01:58.890 --> 00:02:00.860
+Eh, and, writing the complete program,
+
+32
+00:02:00.860 --> 00:02:02.980
+there is not much left to dap,
+to be be done.
+
+33
+00:02:04.500 --> 00:02:07.770
+So let's start with the first part,
+reading and parsing command.
+
+34
+00:02:07.770 --> 00:02:09.510
+The most important thing that we have to,
+
+35
+00:02:09.510 --> 00:02:13.740
+to to think about,
+what we don't need to worry in this part.
+
+36
+00:02:13.740 --> 00:02:18.445
+So the whole point of the parser, of the
+component that reads in parse command, it,
+
+37
+00:02:18.445 --> 00:02:22.260
+it only needs to be able to read
+the input and break it into its parts.
+
+38
+00:02:22.260 --> 00:02:24.490
+It doesn't need to understand anything.
+
+39
+00:02:24.490 --> 00:02:26.950
+It doesn't need to understand
+what the commands mean.
+
+40
+00:02:26.950 --> 00:02:30.880
+It doesn't need to understand how
+they're translated to machine language.
+
+41
+00:02:30.880 --> 00:02:33.730
+It doesn't need to understand
+the symbols or their addresses.
+
+42
+00:02:33.730 --> 00:02:38.300
+The only thing that needs to understand
+is the format of the input language.
+
+43
+00:02:38.300 --> 00:02:41.600
+And how it breaks into
+different components.
+
+44
+00:02:41.600 --> 00:02:43.920
+So let us now see what
+are the different things,
+
+45
+00:02:43.920 --> 00:02:47.480
+what are the different actions
+that it does need to worry about.
+
+46
+00:02:47.480 --> 00:02:50.580
+So let us see what are the things
+it does need to do.
+
+47
+00:02:50.580 --> 00:02:54.080
+Well, first of all, it needs to be
+able to read a file with a given name.
+
+48
+00:02:54.080 --> 00:02:57.180
+So, it needs to start being
+able to start reading a file.
+
+49
+00:02:57.180 --> 00:03:01.140
+So, in particular, for example, you may
+want, if you implement it as a class in
+
+50
+00:03:01.140 --> 00:03:05.740
+some programming language,
+you may want a constructor to actually eh,
+
+51
+00:03:05.740 --> 00:03:09.340
+be able to accept the file name and
+then open the file for reading.
+
+52
+00:03:09.340 --> 00:03:11.440
+So, you will need to know
+how to handle text files,
+
+53
+00:03:11.440 --> 00:03:14.075
+how to read text files in the languages
+that you're implementing.
+
+54
+00:03:14.075 --> 00:03:18.280
+[INAUDIBLE] The second thing is
+once you've started reading a file,
+
+55
+00:03:18.280 --> 00:03:22.870
+you should be able to, every time,
+get the next command in the file.
+
+56
+00:03:22.870 --> 00:03:26.020
+So getting the next command, if you look
+at it, what does it mean in terms of
+
+57
+00:03:26.020 --> 00:03:28.640
+methods, operations that
+this part would have to do?
+
+58
+00:03:28.640 --> 00:03:32.330
+Well you'll probably first have to know
+whether you finished the file already,
+
+59
+00:03:32.330 --> 00:03:35.240
+are there more commands or
+have you reached the end of the file?
+
+60
+00:03:35.240 --> 00:03:38.160
+And then you'll need to be able
+to read into some kind of line,
+
+61
+00:03:38.160 --> 00:03:41.600
+into some kind of string,
+the next command in the file.
+
+62
+00:03:41.600 --> 00:03:45.470
+So the kinds of things, so what that
+entails is basically you will need some
+
+63
+00:03:45.470 --> 00:03:50.080
+kind of string eh, capability, string
+handling capability and you will need
+
+64
+00:03:50.080 --> 00:03:54.590
+to know how to read line by line or
+something like that in your language.
+
+65
+00:03:54.590 --> 00:03:56.620
+The third thing you will
+have to know how to do,
+
+66
+00:03:56.620 --> 00:04:00.480
+is to basically break the command that
+you just read into its components.
+
+67
+00:04:00.480 --> 00:04:03.670
+First of all, you need to know
+what kind of command is it.
+
+68
+00:04:03.670 --> 00:04:06.990
+In our language, we have A-commands and
+we have C-commands And
+
+69
+00:04:06.990 --> 00:04:10.810
+also, there are pseudo-commands
+if you wish, that define labels.
+
+70
+00:04:10.810 --> 00:04:14.780
+These are not really commands in the sense
+of being translated to machine language,
+
+71
+00:04:14.780 --> 00:04:17.740
+but for assembler,
+it will have to basically know that here
+
+72
+00:04:17.740 --> 00:04:20.500
+we have a label definition,
+so we couldn't handle it.
+
+73
+00:04:20.500 --> 00:04:23.840
+So that will be another,
+third if you wish, pseudo-command,
+
+74
+00:04:23.840 --> 00:04:25.890
+that our assembler will have to know.
+
+75
+00:04:25.890 --> 00:04:29.490
+Once we know that, we will probably
+want to give the rest of the program
+
+76
+00:04:29.490 --> 00:04:32.040
+easy access to the different
+parts of the command.
+
+77
+00:04:32.040 --> 00:04:34.010
+So for example, in the assignment command,
+
+78
+00:04:34.010 --> 00:04:38.150
+we'll probably want to give access to
+the destination part of the command,
+
+79
+00:04:38.150 --> 00:04:42.060
+to the computation part of the command,
+and to the jump part of the command.
+
+80
+00:04:42.060 --> 00:04:47.172
+Similarly, in the label or an A-command,
+we'll just want to give our user access to
+
+81
+00:04:47.172 --> 00:04:52.154
+the actual string, which may be a symbol
+and may be an actual number that provided.
+
+82
+00:04:52.154 --> 00:04:56.669
+For example, the following set of a, a,
+of method, if you wish, in a Java or
+
+83
+00:04:56.669 --> 00:05:01.554
+C-like, in a Java-like language, probably
+would give you this type of access.
+
+84
+00:05:01.554 --> 00:05:04.694
+Eh, but eh, of course the whole point,
+
+85
+00:05:04.694 --> 00:05:10.154
+the important thing is that you get
+the pieces of information separately and,
+
+86
+00:05:10.154 --> 00:05:14.400
+in any way that you wish
+that one wants to provided.
+
+87
+00:05:14.400 --> 00:05:18.810
+The next thing that we have to do, is the,
+is translate each one of the components of
+
+88
+00:05:18.810 --> 00:05:23.276
+the command into the actual ma,
+machine code into the binary code.
+
+89
+00:05:23.276 --> 00:05:27.410
+Now we call that the specif,
+specification of the language basically,
+
+90
+00:05:27.410 --> 00:05:31.160
+we have each part of the assembly
+language command has a separate
+
+91
+00:05:31.160 --> 00:05:35.570
+part inside the bits of the machine
+language command that correspond to it.
+
+92
+00:05:35.570 --> 00:05:38.770
+And this is basically what we
+need to do this translation.
+
+93
+00:05:38.770 --> 00:05:42.330
+Now again, the important point is
+what we don't need to worry about.
+
+94
+00:05:42.330 --> 00:05:44.260
+We don't need to worry about it all.
+
+95
+00:05:44.260 --> 00:05:47.755
+The, the way that our mnemonics,
+the pieces of this code of,
+
+96
+00:05:47.755 --> 00:05:49.660
+of the command were obtained.
+
+97
+00:05:49.660 --> 00:05:52.780
+We only get a destination, for example, D.
+
+98
+00:05:52.780 --> 00:05:54.330
+Or a computation, for example,
+
+99
+00:05:54.330 --> 00:05:59.390
+M plus 1, and need to be able to translate
+that very short string into the code.
+
+100
+00:05:59.390 --> 00:06:01.370
+We don't need to worry
+about how we got it,
+
+101
+00:06:01.370 --> 00:06:04.780
+what part of the input line it is and
+so on.
+
+102
+00:06:04.780 --> 00:06:07.750
+So this is a very low,
+this is a very well-defined and
+
+103
+00:06:07.750 --> 00:06:12.750
+small task that we need to do now, and the
+way to do it was really already specified.
+
+104
+00:06:12.750 --> 00:06:13.950
+How do we, for example,
+
+105
+00:06:13.950 --> 00:06:17.750
+translate the destination part into
+the three bits that specify it?
+
+106
+00:06:17.750 --> 00:06:20.380
+Well there was a little
+table that already appeared
+
+107
+00:06:20.380 --> 00:06:23.800
+in the previous lecture that
+specified that translation.
+
+108
+00:06:23.800 --> 00:06:27.620
+For everything that can happen there,
+for every string
+
+109
+00:06:27.620 --> 00:06:31.080
+that can be part of the destination,
+we know what are the bits are.
+
+110
+00:06:31.080 --> 00:06:34.740
+So we just need to be able to do this
+translation that's written in the table.
+
+111
+00:06:34.740 --> 00:06:38.380
+Similarly, there was another table
+to specify the jump location.
+
+112
+00:06:38.380 --> 00:06:43.650
+And yet another table, the biggest one, to
+specify how you take the computation and
+
+113
+00:06:43.650 --> 00:06:46.840
+translate it into the seven bits,
+one of them called A and
+
+114
+00:06:46.840 --> 00:06:51.000
+the other one called C, that specify
+the computation in the machine language.
+
+115
+00:06:51.000 --> 00:06:52.510
+And recall again,
+
+116
+00:06:52.510 --> 00:06:57.450
+that our machine language that is
+a C-command actually starts with 31 bits.
+
+117
+00:06:57.450 --> 00:07:00.180
+So we also need to put the 31 bits, and
+
+118
+00:07:00.180 --> 00:07:03.490
+voila, we have our,
+our machine language code.
+
+119
+00:07:03.490 --> 00:07:07.540
+So let us use an,
+see an example how to use this parser eh,
+
+120
+00:07:07.540 --> 00:07:11.640
+object, and the code object to
+actually do that translation.
+
+121
+00:07:11.640 --> 00:07:16.010
+So our parser object, presumable eh, gives
+us access to each one of the parts, for
+
+122
+00:07:16.010 --> 00:07:18.880
+example the computation destination and
+jump parts, so
+
+123
+00:07:18.880 --> 00:07:21.690
+we basically take each one of them and
+
+124
+00:07:21.690 --> 00:07:26.330
+ask the parser to give us the string that
+corresponds to each part of these pieces.
+
+125
+00:07:26.330 --> 00:07:28.740
+Once we have these three
+different strings,
+
+126
+00:07:28.740 --> 00:07:32.520
+we actually go to the code object and
+ask them to translate
+
+127
+00:07:32.520 --> 00:07:35.840
+each one of them separately
+according to the table it has in it.
+
+128
+00:07:35.840 --> 00:07:41.660
+So now, each part of these now we have the
+machine code for each one of these parts.
+
+129
+00:07:41.660 --> 00:07:44.600
+To put them together,
+we simply concatenate all of them
+
+130
+00:07:44.600 --> 00:07:47.350
+together with the three ones
+that appear on the left.
+
+131
+00:07:47.350 --> 00:07:51.930
+And here we have a simple piece of code
+that actually gives us the complete
+
+132
+00:07:51.930 --> 00:07:56.780
+translation of our original string
+that held an assembly language command
+
+133
+00:07:56.780 --> 00:07:59.730
+into a string that now holds binary bits.
+
+134
+00:07:59.730 --> 00:08:03.210
+Let us now move into the third part
+that we've already identified,
+
+135
+00:08:03.210 --> 00:08:04.400
+the symbol table.
+
+136
+00:08:04.400 --> 00:08:07.950
+The actual table that keeps
+the association between symbol names and
+
+137
+00:08:07.950 --> 00:08:09.390
+their addresses.
+
+138
+00:08:09.390 --> 00:08:13.230
+Again, the important thing is what
+the symbol doesn't have to understand, it,
+
+139
+00:08:13.230 --> 00:08:16.360
+it doesn't need to understand anything
+about the machine language or
+
+140
+00:08:16.360 --> 00:08:19.060
+assembly language about
+what the symbols mean.
+
+141
+00:08:19.060 --> 00:08:22.840
+The only thing that, the only thing that
+our symbol table will have to understand
+
+142
+00:08:22.840 --> 00:08:26.140
+is maintain association
+between a symbol and
+
+143
+00:08:26.140 --> 00:08:30.350
+a memory address, that is it,
+without understanding anymore than that.
+
+144
+00:08:30.350 --> 00:08:31.040
+So, in particular,
+
+145
+00:08:31.040 --> 00:08:35.000
+what kind of the operations that must
+our symbol table be able to handle?
+
+146
+00:08:35.000 --> 00:08:38.310
+Well, we probably need to create
+a new empty symbol table.
+
+147
+00:08:38.310 --> 00:08:42.430
+We need to be able to add assemble
+address pair to the table,
+
+148
+00:08:42.430 --> 00:08:46.730
+we need to able to look up into the table
+and see, does this symbol exist there and
+
+149
+00:08:46.730 --> 00:08:48.660
+if so, what is the address there?
+
+150
+00:08:48.660 --> 00:08:53.380
+And these are the operations that
+basically we need to, to be able to do.
+
+151
+00:08:53.380 --> 00:08:58.297
+So eh, that's very, very simple and most
+languages already have a class that does
+
+152
+00:08:58.297 --> 00:09:02.739
+this kind of a symbol table for us, and
+we'll probably just need to use it.
+
+153
+00:09:02.739 --> 00:09:06.688
+But let us look a little bit,
+how are we going to use the symbol table?
+
+154
+00:09:06.688 --> 00:09:11.150
+So, here is the basic logic of
+handling the symbols in our program.
+
+155
+00:09:12.530 --> 00:09:16.810
+We start, we will probably want to start
+with creating an empty symbol table.
+
+156
+00:09:16.810 --> 00:09:20.320
+Then, if you remember in the hack machine
+language, in the hack assembly language,
+
+157
+00:09:20.320 --> 00:09:22.440
+there are a bunch of pre-defined symbols.
+
+158
+00:09:22.440 --> 00:09:24.340
+Such as keyboard and so on.
+
+159
+00:09:24.340 --> 00:09:27.670
+So, we'll probably, the first thing we'll
+probably just want to do in our program
+
+160
+00:09:27.670 --> 00:09:30.480
+is add all these pre-defined
+symbols to the table.
+
+161
+00:09:31.790 --> 00:09:37.770
+Then, as we go reading the program and
+translating it, we'll probably want to eh,
+
+162
+00:09:37.770 --> 00:09:43.460
+add labels and add variables to the,
+a symbol table whenever we see it.
+
+163
+00:09:43.460 --> 00:09:48.560
+And then when you, we already have this
+updated table all the time in our program.
+
+164
+00:09:48.560 --> 00:09:52.890
+Whenever we see an A-command
+with a symbol in it,
+
+165
+00:09:52.890 --> 00:09:57.020
+we basically look up the new symbol,
+look up the symbol in the table and
+
+166
+00:09:57.020 --> 00:10:02.040
+have a direct translation to a number
+that then we can keep on eh, handy.
+
+167
+00:10:02.040 --> 00:10:05.830
+So the only thing that we probably need
+to look a little bit more carefully
+
+168
+00:10:05.830 --> 00:10:08.740
+is how do we put
+the symbols into the table.
+
+169
+00:10:08.740 --> 00:10:11.540
+How do we put the labels and
+the variables into the table.
+
+170
+00:10:11.540 --> 00:10:14.920
+So let us look at that piece
+a little bit eh, more carefully.
+
+171
+00:10:14.920 --> 00:10:20.030
+So in the case of a label, whenever we see
+a label command inside parenthesis then
+
+172
+00:10:20.030 --> 00:10:26.980
+we probably need to add set label, to add
+a symbol, into the, into the symbol table.
+
+173
+00:10:26.980 --> 00:10:29.940
+And what is the address
+that's associated with it?
+
+174
+00:10:29.940 --> 00:10:33.370
+We probably need to know,
+we need to remember what is the current
+
+175
+00:10:33.370 --> 00:10:36.320
+address that we're going to put
+the next command in the file.
+
+176
+00:10:36.320 --> 00:10:39.330
+And that is the address that's
+going to be associated with it, and
+
+177
+00:10:39.330 --> 00:10:42.670
+this is what we need to put
+to add to the symbol table.
+
+178
+00:10:43.980 --> 00:10:46.370
+Now two comments are in place here.
+
+179
+00:10:46.370 --> 00:10:48.730
+Eh, one of them is, remember that this,
+
+180
+00:10:48.730 --> 00:10:50.970
+we need to know where we
+are in the program, so
+
+181
+00:10:50.970 --> 00:10:55.180
+we need to keep on maintaining a running
+line number, if you wish, in the table
+
+182
+00:10:55.180 --> 00:10:59.580
+specifying what is the address that every
+new address is going to be put into.
+
+183
+00:10:59.580 --> 00:11:03.249
+Because this is exactly what is going to
+tell us, what is the current address.
+
+184
+00:11:04.396 --> 00:11:09.590
+The second eh, comment is that you re,
+if you recall eh, we probably want
+
+185
+00:11:09.590 --> 00:11:15.530
+to have a first pass, because there are
+could be forward eh, references to labels.
+
+186
+00:11:15.530 --> 00:11:19.040
+We probably want to have a first pass and
+enter all the labels
+
+187
+00:11:19.040 --> 00:11:22.610
+in a first pass into the symbol table
+before we actually start using them.
+
+188
+00:11:24.380 --> 00:11:28.070
+Now for variables,
+the situation is a slightly different.
+
+189
+00:11:28.070 --> 00:11:32.970
+Whenever we see another a,
+label, another A-command
+
+190
+00:11:32.970 --> 00:11:37.230
+with a new variable that we don't
+recognize yet, then first of all we know
+
+191
+00:11:37.230 --> 00:11:41.280
+it's not the label because the labels were
+already all entered in the first part.
+
+192
+00:11:42.460 --> 00:11:47.230
+Then, if it's not in the symbol table,
+it means that we have a new variable name.
+
+193
+00:11:47.230 --> 00:11:50.473
+And then we need to allocate
+it the next available address.
+
+194
+00:11:50.473 --> 00:11:51.750
+And recall that the next,
+
+195
+00:11:51.750 --> 00:11:55.127
+the address that we allocate
+the variables start at the number 16.
+
+196
+00:11:55.127 --> 00:11:58.190
+And then keep on going 17, 18, and so on.
+
+197
+00:11:58.190 --> 00:12:03.548
+So whenever we see a new, a, a new symbol
+in an A-command, what we'd need to do is
+
+198
+00:12:03.548 --> 00:12:08.699
+allocate a new place for that new symbol,
+enter, and enter it into the table.
+
+199
+00:12:08.699 --> 00:12:09.668
+So up to this point,
+
+200
+00:12:09.668 --> 00:12:13.437
+we've described three basic components
+that our assembler will have to use.
+
+201
+00:12:13.437 --> 00:12:15.990
+And now let's see how do we use them.
+
+202
+00:12:15.990 --> 00:12:18.850
+What is the overall
+logic of our assembler?
+
+203
+00:12:18.850 --> 00:12:22.900
+Well, we started by initial, initializing,
+we need to initialize our parser to start
+
+204
+00:12:22.900 --> 00:12:26.370
+opening the file, we need to initialize
+the symbol table to be empty, and
+
+205
+00:12:26.370 --> 00:12:29.780
+to start eh, having in it all
+the pre-defined symbols, and so on.
+
+206
+00:12:29.780 --> 00:12:33.608
+And then we need to have our first
+pass where you go after the program,
+
+207
+00:12:33.608 --> 00:12:37.445
+only pay attention to labels, and
+enter them into the symbol table.
+
+208
+00:12:37.445 --> 00:12:41.225
+Then we have to restart reading
+the program from the beginning,
+
+209
+00:12:41.225 --> 00:12:43.326
+read the command and translate it.
+
+210
+00:12:43.326 --> 00:12:45.045
+Read the command and translate it.
+
+211
+00:12:45.045 --> 00:12:49.144
+As we do that, we need to keep on
+entering new symbols into the table,
+
+212
+00:12:49.144 --> 00:12:52.963
+only variable symbols now because
+already all the label symbols
+
+213
+00:12:52.963 --> 00:12:55.385
+were already entered in the first pass.
+
+214
+00:12:56.550 --> 00:12:59.150
+And then our main loop is very simple.
+
+215
+00:12:59.150 --> 00:13:02.810
+You read one, you,
+you read a command from the input.
+
+216
+00:13:04.072 --> 00:13:08.640
+If it's an A-command and we have a,
+and we have a la, we have a symbol,
+
+217
+00:13:08.640 --> 00:13:13.780
+we need to translate that symbol into
+an address as we've already described.
+
+218
+00:13:13.780 --> 00:13:18.360
+If it's a C-command, we need to split it
+into the three parts that a C-command has,
+
+219
+00:13:18.360 --> 00:13:21.110
+translate each one of
+them into binary code.
+
+220
+00:13:21.110 --> 00:13:24.030
+And then we have the binary
+code to output for the, to,
+
+221
+00:13:24.030 --> 00:13:27.890
+to output as our output for
+that line in the file.
+
+222
+00:13:27.890 --> 00:13:30.740
+And we keep on doing that
+until the program is over.
+
+223
+00:13:30.740 --> 00:13:34.270
+And that's basically
+a simple piece of code,
+
+224
+00:13:34.270 --> 00:13:38.780
+left to right, after we have the three
+models that we've previously described.
+
+225
+00:13:38.780 --> 00:13:43.217
+So, what the, that finishes the basic
+architecture, our, our suggestion for
+
+226
+00:13:43.217 --> 00:13:45.317
+basic architecture of an assembler.
+
+227
+00:13:45.317 --> 00:13:50.408
+And what we're going to describe in
+the next unit is the basic mechanics of
+
+228
+00:13:50.408 --> 00:13:54.064
+doing the project of how to test it,
+how to submit and so on.

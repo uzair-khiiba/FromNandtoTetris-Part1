@@ -1,0 +1,596 @@
+WEBVTT
+
+1
+00:00:04.088 --> 00:00:08.629
+In the previous unit, we talked
+about the assembly process and, and
+
+2
+00:00:08.629 --> 00:00:12.712
+logic in general, and
+about writing assemblers in general.
+
+3
+00:00:12.712 --> 00:00:17.705
+And in this unit, we will start
+the journey of actually building
+
+4
+00:00:17.705 --> 00:00:21.033
+an assembler, an assembler that works and
+
+5
+00:00:21.033 --> 00:00:27.720
+that can translate programs from symbolic
+hack code into binary Hack code.
+
+6
+00:00:27.720 --> 00:00:31.250
+So here is the overall
+picture in a nutshell.
+
+7
+00:00:31.250 --> 00:00:37.270
+We are given a source program written
+in symbolic Hack language and
+
+8
+00:00:37.270 --> 00:00:43.020
+we have to translate it into an equivalent
+program written in binary code.
+
+9
+00:00:43.020 --> 00:00:48.570
+So if you were the person who's supposed
+to write to develop such an assembler,
+
+10
+00:00:48.570 --> 00:00:49.530
+how would you go about it?
+
+11
+00:00:49.530 --> 00:00:54.030
+And what, what is the knowledge
+that you have to know in order to
+
+12
+00:00:54.030 --> 00:00:56.790
+develop such a general purpose translator?
+
+13
+00:00:56.790 --> 00:01:01.642
+Because bear in mind, we have to be able
+to translate any program written in Hack
+
+14
+00:01:01.642 --> 00:01:06.130
+symbolic code, not just the subset
+of programs but any given program.
+
+15
+00:01:06.130 --> 00:01:10.630
+Well, this is, in general,
+it's a translation challenge, right?
+
+16
+00:01:10.630 --> 00:01:14.110
+You have to translate from one language,
+from the source language,
+
+17
+00:01:14.110 --> 00:01:15.330
+to the target language.
+
+18
+00:01:15.330 --> 00:01:19.880
+And in order to do this, you have to
+know the grammar of both languages.
+
+19
+00:01:19.880 --> 00:01:21.740
+You have to know the syntax rules.
+
+20
+00:01:21.740 --> 00:01:26.650
+For example, if you want to translate
+from French to Spanish, you have to know
+
+21
+00:01:26.650 --> 00:01:31.780
+the grammatical rules of French in
+order to take the source sentence and
+
+22
+00:01:31.780 --> 00:01:35.650
+decompose it or
+parse it into its lingual elements.
+
+23
+00:01:35.650 --> 00:01:38.960
+Then you observe or
+you inspect these elements.
+
+24
+00:01:38.960 --> 00:01:42.640
+You figure out what is
+the semantics of this sentence, and
+
+25
+00:01:42.640 --> 00:01:46.410
+then you re-express
+the semantics in Spanish.
+
+26
+00:01:46.410 --> 00:01:49.680
+And in order to do this, you have to
+know the rules of the game in Spanish.
+
+27
+00:01:49.680 --> 00:01:55.930
+You have to be able to synthesize a target
+sentence written in the target language.
+
+28
+00:01:55.930 --> 00:01:58.530
+And that's exactly what we do here.
+
+29
+00:01:58.530 --> 00:02:03.219
+However, when we write translators for
+programming languages,
+
+30
+00:02:03.219 --> 00:02:08.456
+the task is supremely easier because
+programming languages are supremely
+
+31
+00:02:08.456 --> 00:02:13.086
+simpler than human spoken languages or
+natural languages.
+
+32
+00:02:13.086 --> 00:02:19.334
+And in particular, machine languages
+are are very simple, and therefore
+
+33
+00:02:19.334 --> 00:02:25.586
+the translation task is going to be less
+formidable as it may seem at the outset.
+
+34
+00:02:25.586 --> 00:02:31.503
+All right, so what do we have
+to know about the Hack language?
+
+35
+00:02:31.503 --> 00:02:35.404
+Well, the Hack language
+consists of A-instructions,
+
+36
+00:02:35.404 --> 00:02:37.586
+C-instructions, and symbols.
+
+37
+00:02:37.586 --> 00:02:42.469
+So let us explore every one of
+these categories very briefly.
+
+38
+00:02:42.469 --> 00:02:47.710
+The A-instruction comes up
+in in its symbolic syntax.
+
+39
+00:02:47.710 --> 00:02:51.750
+And here is the equivalent binary syntax.
+
+40
+00:02:51.750 --> 00:02:54.890
+And if you want to
+translate one to the other,
+
+41
+00:02:54.890 --> 00:02:59.140
+I think it doesn't take too much
+imagination to figure out how to do it.
+
+42
+00:02:59.140 --> 00:03:03.320
+And in any rate, we are going to
+say it explicitly down the road.
+
+43
+00:03:03.320 --> 00:03:07.684
+The C-instruction in a very similar
+fashion, has a symbolic syntax and
+
+44
+00:03:07.684 --> 00:03:09.210
+a binary syntax.
+
+45
+00:03:09.210 --> 00:03:14.870
+And there's a set of tables that describe
+the mapping between the former and
+
+46
+00:03:14.870 --> 00:03:16.160
+the, the latter.
+
+47
+00:03:16.160 --> 00:03:20.115
+And finally the Hack
+language features symbols.
+
+48
+00:03:20.115 --> 00:03:24.360
+You know, the programmer is invited
+to use some pre-defined symbols.
+
+49
+00:03:24.360 --> 00:03:28.740
+And also, the programmer is invited
+to invent symbols of his or
+
+50
+00:03:28.740 --> 00:03:34.886
+her own using the label
+declaration statement and
+
+51
+00:03:34.886 --> 00:03:42.250
+eth statements or A-instructions that
+are designed to declare and use variables.
+
+52
+00:03:42.250 --> 00:03:47.230
+So this, basically, you know,
+this is a complete description
+
+53
+00:03:47.230 --> 00:03:51.520
+of the Hack machine language and
+given this description,
+
+54
+00:03:51.520 --> 00:03:56.050
+you should be able to develop
+the desired assembler.
+
+55
+00:03:56.050 --> 00:04:01.250
+So given that we have a program
+in which all these things
+
+56
+00:04:01.250 --> 00:04:05.350
+that I mentioned before come to play in a,
+in a vivid example.
+
+57
+00:04:06.560 --> 00:04:11.650
+What exactly do we have here, you know,
+in terms of general constructs?
+
+58
+00:04:11.650 --> 00:04:15.060
+Well, first of all, we have white space.
+
+59
+00:04:15.060 --> 00:04:18.330
+We haven't mentioned white space in the
+language specification, we should have.
+
+60
+00:04:19.510 --> 00:04:23.920
+But the white space is almost the same in
+every language that you can think about.
+
+61
+00:04:23.920 --> 00:04:29.980
+You are welcome to introduce
+empty lines and comments and
+
+62
+00:04:29.980 --> 00:04:35.870
+in the Hack language, a comment is
+anything that begins with two slashes.
+
+63
+00:04:35.870 --> 00:04:38.680
+So we have to know how to
+deal with white space.
+
+64
+00:04:38.680 --> 00:04:42.080
+And then we have a sequence of
+A-instructions and C-instructions
+
+65
+00:04:42.080 --> 00:04:46.400
+that we have to translate, and finally,
+we have to deal with the symbols.
+
+66
+00:04:46.400 --> 00:04:51.010
+Symbols come to play either in
+label declaration commands or
+
+67
+00:04:51.010 --> 00:04:55.300
+in references in the context
+of A-instructions.
+
+68
+00:04:55.300 --> 00:04:59.850
+So, to make a long story short, if you
+want to write an assembler, you have to
+
+69
+00:04:59.850 --> 00:05:04.689
+know how to deal with white space,
+with instructions, and with symbols.
+
+70
+00:05:06.470 --> 00:05:11.730
+Let me say a few words about symbols
+before we before we go along.
+
+71
+00:05:13.210 --> 00:05:19.010
+I've used red ink in what you see here in
+order to highlight all the symbols that
+
+72
+00:05:19.010 --> 00:05:21.860
+appear in this program and it's, as you
+can see, there are quite a few of them.
+
+73
+00:05:21.860 --> 00:05:27.570
+And that's quite characteristic to
+symbolic machine language programs.
+
+74
+00:05:27.570 --> 00:05:30.070
+They have numerous symbols in them.
+
+75
+00:05:30.070 --> 00:05:33.440
+So the question is,
+how do we deal with these symbols?
+
+76
+00:05:33.440 --> 00:05:39.700
+Well you know, the answer is that
+in many cases in life when you face
+
+77
+00:05:41.370 --> 00:05:46.450
+a big mountain in front of your
+track well, in some cases,
+
+78
+00:05:46.450 --> 00:05:51.010
+you know, the best way to deal with this
+mountain Is simply to, to bypass it.
+
+79
+00:05:51.010 --> 00:05:53.450
+And that's exactly what I'm
+going to do with the symbols.
+
+80
+00:05:53.450 --> 00:05:55.440
+I'm going to deal with them later.
+
+81
+00:05:55.440 --> 00:05:58.860
+And by the way, if we are lucky,
+as we bypass this mountain,
+
+82
+00:05:58.860 --> 00:06:02.860
+we may gain some ground and
+then summiting the mountain
+
+83
+00:06:02.860 --> 00:06:06.640
+may be easier from the other side
+than from the original side.
+
+84
+00:06:06.640 --> 00:06:11.950
+And indeed, you will see that when we'll
+introduce symbols later on in the process,
+
+85
+00:06:11.950 --> 00:06:18.390
+it will be much easier to to morph them,
+so to speak, into our assembler solution.
+
+86
+00:06:18.390 --> 00:06:21.850
+All right, so symbols later and
+with that in mind,
+
+87
+00:06:21.850 --> 00:06:27.290
+I now have to deal only with
+programs that have no symbols.
+
+88
+00:06:27.290 --> 00:06:29.690
+And the assembler that I have
+to write is much simpler.
+
+89
+00:06:29.690 --> 00:06:35.230
+It's an assembler that deals with
+symbol-less symbolic Hack programs.
+
+90
+00:06:35.230 --> 00:06:41.370
+So the challenge that remain is to deal
+with white space and instructions only.
+
+91
+00:06:42.550 --> 00:06:44.135
+And let us begin with white space.
+
+92
+00:06:44.135 --> 00:06:47.840
+Now, what should we do
+with with white space?
+
+93
+00:06:47.840 --> 00:06:53.650
+Once again, I've used red ink to highlight
+all the white space in the program.
+
+94
+00:06:53.650 --> 00:06:57.080
+And the easiest way to
+deal with white space and
+
+95
+00:06:57.080 --> 00:07:01.780
+obviously the most sensible
+way is to simply ignore it.
+
+96
+00:07:01.780 --> 00:07:07.420
+So as you process the source code
+whenever you see a comment or
+
+97
+00:07:07.420 --> 00:07:11.300
+an empty line,
+you simply toss away all this
+
+98
+00:07:12.730 --> 00:07:16.520
+all the contents the follow,
+that follow in this specific line.
+
+99
+00:07:16.520 --> 00:07:20.420
+And you go on to translate
+the remaining code.
+
+100
+00:07:20.420 --> 00:07:25.452
+So white space is simply ignored.
+
+101
+00:07:25.452 --> 00:07:28.782
+So what remains after we eliminate
+
+102
+00:07:28.782 --> 00:07:32.213
+eliminate the white space
+is only instructions.
+
+103
+00:07:32.213 --> 00:07:39.714
+So the challenge is reduced to translating
+programs that have pure instructions,
+
+104
+00:07:39.714 --> 00:07:44.012
+so to speak, and
+these are this is a sequence or
+
+105
+00:07:44.012 --> 00:07:48.045
+a stream of A-instructions and
+C-instructions.
+
+106
+00:07:48.045 --> 00:07:49.873
+And in order to translate them,
+
+107
+00:07:49.873 --> 00:07:54.900
+we have to know how to translate
+these instructions into binary code.
+
+108
+00:07:54.900 --> 00:07:59.480
+And that's exactly what we
+are going to do in the next unit.
+
+109
+00:08:00.600 --> 00:08:03.230
+But before we introduce the next unit,
+
+110
+00:08:03.230 --> 00:08:09.660
+I'd like to give you an overall picture
+of where we're heading from here onward.
+
+111
+00:08:09.660 --> 00:08:11.870
+Well here's the, here's the plan.
+
+112
+00:08:13.350 --> 00:08:18.750
+Since we decided to defer the treatment
+of symbols to a later stage,
+
+113
+00:08:18.750 --> 00:08:22.450
+we'll begin by writing a basic assembler
+
+114
+00:08:22.450 --> 00:08:27.010
+that can deal with programs
+that contain no symbols.
+
+115
+00:08:27.010 --> 00:08:29.000
+This will be done in the next unit.
+
+116
+00:08:29.000 --> 00:08:33.920
+In the subsequent unit, we are going
+to develop the ability to represent,
+
+117
+00:08:33.920 --> 00:08:36.780
+handle, and use symbols.
+
+118
+00:08:36.780 --> 00:08:41.380
+And finally, using this ability, we
+are going to return to the basic assembler
+
+119
+00:08:41.380 --> 00:08:44.180
+that we wrote before and morph it or
+
+120
+00:08:44.180 --> 00:08:49.915
+extend it into a general purpose assembler
+that can translate any given program,
+
+121
+00:08:49.915 --> 00:08:55.380
+any given program written in Hack
+assembly code into binary code.
+
+122
+00:08:55.380 --> 00:08:56.960
+This is the plan.
+
+123
+00:08:56.960 --> 00:08:59.250
+So beginning with the next unit,
+
+124
+00:08:59.250 --> 00:09:02.680
+we're going to talk about how
+to translate instructions.
